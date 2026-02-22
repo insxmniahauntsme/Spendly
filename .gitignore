@@ -1,0 +1,56 @@
+# Build results
+bin/
+obj/
+out/
+artifacts/
+*_wpftmp.csproj
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# Visual Studio
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.assets.json
+project.nuget.cache
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test results
+TestResults/
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Publish
+publish/
+
+# Local DB
+*.db
+*.sqlite3
+identifier.sqlite
+
+# Temporary files
+*.tmp
+*.temp

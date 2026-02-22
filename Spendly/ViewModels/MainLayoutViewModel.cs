@@ -1,0 +1,41 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace Spendly.ViewModels;
+
+public partial class MainLayoutViewModel(
+	DashboardViewModel dashboardVm,
+	TransactionsViewModel transactionsVm)
+	: ObservableObject
+{
+	private DashboardViewModel DashboardVm { get; } = dashboardVm;
+	private TransactionsViewModel TransactionsVm { get; } = transactionsVm;
+
+	[ObservableProperty] private ObservableObject currentVm = dashboardVm;
+
+	public bool IsDashboardSelected
+	{
+		get => CurrentVm == DashboardVm;
+		set
+		{
+			if (value)
+				CurrentVm = DashboardVm;
+		}
+	}
+	
+	public bool IsTransactionsSelected
+	{
+		get => CurrentVm == TransactionsVm;
+		set
+		{
+			if (value)
+				CurrentVm = TransactionsVm;
+		}
+	}
+
+	[RelayCommand]
+	private void ShowDashboard() => CurrentVm = DashboardVm;
+	
+	[RelayCommand]
+	private void ShowTransactions() => CurrentVm = TransactionsVm;
+}

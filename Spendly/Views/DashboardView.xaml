@@ -1,0 +1,275 @@
+<UserControl x:Class="Spendly.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Spendly.Controls"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+
+    <Grid Background="{StaticResource Brush.MainBg}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20,20,20,16">
+
+                <!-- KPI row -->
+                <UniformGrid Columns="4">
+                    <controls:KpiCard Margin="0,0,12,12"
+                                      Variant="Success"
+                                      Title="Доходи (міс.)"
+                                      ValueText="₴ 42 500"
+                                      BadgeText="▲ +12.4%"
+                                      SubText=""/>
+
+                    <controls:KpiCard Margin="0,0,12,12"
+                                      Variant="Danger"
+                                      Title="Витрати (міс.)"
+                                      ValueText="₴ 28 340"
+                                      BadgeText="▼ +8.1%"
+                                      SubText=""/>
+
+                    <controls:KpiCard Margin="0,0,12,12"
+                                      Variant="Primary"
+                                      Title="Залишок"
+                                      ValueText="₴ 14 160"
+                                      BadgeText=""
+                                      SubText="33.3% від доходу"/>
+
+                    <controls:KpiCard Margin="0,0,0,12"
+                                      Variant="Warning"
+                                      Title="Транзакцій"
+                                      ValueText="47"
+                                      BadgeText=""
+                                      SubText="за поточний місяць"/>
+                </UniformGrid>
+
+                <!-- CHARTS ROW -->
+                <Grid Margin="0,4,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="320"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT: Income/Expense bar chart -->
+                    <Border Grid.Column="0"
+                            CornerRadius="12"
+                            Background="{StaticResource Brush.CardBg}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="12"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel>
+                                    <TextBlock Text="Доходи / Витрати"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                                    <TextBlock Text="ОСТАННІ 6 МІСЯЦІВ"
+                                               Margin="0,4,0,0"
+                                               FontSize="11"
+                                               Foreground="{StaticResource Brush.TextMuted}"/>
+                                </StackPanel>
+
+                                <!-- Legend (simple) -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Top"
+                                            Margin="0,2,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                        <Border Width="8" Height="8" CornerRadius="3"
+                                                Background="{StaticResource Brush.Success}"
+                                                VerticalAlignment="Center"/>
+                                        <TextBlock Text="Доходи"
+                                                   Margin="8,0,0,0"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="8" Height="8" CornerRadius="3"
+                                                Background="{StaticResource Brush.Danger}"
+                                                VerticalAlignment="Center"/>
+                                        <TextBlock Text="Витрати"
+                                                   Margin="8,0,0,0"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Chart -->
+                            <lvc:CartesianChart Grid.Row="2"
+                                               Series="{Binding IncomeExpenseSeries}"
+                                               XAxes="{Binding MonthsAxis}"
+                                               YAxes="{Binding MoneyAxis}"
+                                               LegendPosition="Hidden"
+                                               TooltipPosition="Top"
+                                               ZoomMode="None"
+                                               Background="Transparent"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- RIGHT: Categories donut -->
+                    <Border Grid.Column="2"
+                            CornerRadius="12"
+                            Background="{StaticResource Brush.CardBg}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="6"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="12"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="12"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="По категоріях"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+
+                            <TextBlock Grid.Row="2"
+                                       Text="ПОТОЧНИЙ МІСЯЦЬ"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}"/>
+
+                            <lvc:PieChart Grid.Row="4"
+                                          Series="{Binding CategorySeries}"
+                                          LegendPosition="Hidden"
+                                          TooltipPosition="Top"
+                                          InitialRotation="-90"
+                                          Background="Transparent"
+                                          Height="160"/>
+
+                            <!-- category list -->
+                            <ItemsControl Grid.Row="6"
+                                          ItemsSource="{Binding CategoryLegend}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,8,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border Width="10" Height="10" CornerRadius="3"
+                                                    Background="{Binding ColorBrush}"
+                                                    VerticalAlignment="Center"/>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="10,0,0,0"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource Brush.TextMuted}"
+                                                       Text="{Binding Name}"/>
+
+                                            <TextBlock Grid.Column="2"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource Brush.TextMuted}"
+                                                       Text="{Binding PercentText}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- TRANSACTIONS -->
+                <Border CornerRadius="12"
+                        Background="{StaticResource Brush.CardBg}"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        Padding="16">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="14"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Останні транзакції"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource HeaderOutlineButtonStyle}"
+                                    Width="150"
+                                    Height="32"
+                                    Content="Переглянути всі →"/>
+                        </Grid>
+
+                        <ItemsControl Grid.Row="2"
+                                      ItemsSource="{Binding RecentTransactions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,10,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="44"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- icon placeholder -->
+                                        <Border Width="36" Height="36" CornerRadius="10"
+                                                Background="{StaticResource Brush.HoverBg}">
+                                            <TextBlock Text="{Binding IconText}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource Brush.TextMuted}"
+                                                       FontSize="12"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontSize="13"
+                                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                                            <TextBlock Text="{Binding Category}"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource Brush.TextMuted}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding DateText}"
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource Brush.TextMuted}"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding AmountText}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{Binding AmountBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
