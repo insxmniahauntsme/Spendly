@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Controls;
-using Spendly.Controls.Enums;
 
-namespace Spendly.Controls;
+namespace Spendly.Controls.Dashboard;
 
+// TODO: Remake from custom control to user control. No need in custom control.
 public class KpiCard : Control
 {
     static KpiCard()

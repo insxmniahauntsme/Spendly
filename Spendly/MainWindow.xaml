@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Spendly.Views"
         mc:Ignorable="d"
-        Title="Spendly" Height="720" Width="1200">
+        Title="Spendly" Height="940" Width="1500">
         
         <views:MainLayoutView />
         

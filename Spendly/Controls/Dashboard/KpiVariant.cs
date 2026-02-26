@@ -1,4 +1,4 @@
-namespace Spendly.Controls.Enums;
+namespace Spendly.Controls.Dashboard;
 
 public enum KpiVariant
 {

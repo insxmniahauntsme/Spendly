@@ -2,28 +2,32 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Spendly.Application.DependencyInjection;
 using Spendly.Infrastructure.DependencyInjection;
 using Spendly.Infrastructure.Interfaces;
 using Spendly.Infrastructure.Services;
 using Spendly.Sqlite.Configurations;
 using Spendly.Sqlite.DependencyInjection;
 using Spendly.ViewModels;
+using Spendly.ViewModels.Transactions;
+using DashboardViewModel = Spendly.ViewModels.Dashboard.DashboardViewModel;
 
 namespace Spendly;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App
 {
 	private IHost Host { get; }
 
 	public App()
 	{
 		Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
-			.ConfigureServices((services) =>
+			.ConfigureServices(services =>
 			{
 				services.AddInfrastructure();
+				services.AddApplication();
 				services.AddSqlite();
 				//services.AddPostgresql();
 				

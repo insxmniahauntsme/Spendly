@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Spendly.Views;
+namespace Spendly.Views.Transactions;
 
 public partial class TransactionsHeaderView : UserControl
 {

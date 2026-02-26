@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="Spendly.Controls.MonthPicker.MonthPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Spendly.Controls"
+             x:Name="Root">
+
+    <Grid>
+        <!-- Top button -->
+        <ToggleButton x:Name="DropButton"
+                      Style="{Binding ElementName=Root, Path=ButtonStyle}"
+                      IsChecked="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <controls:SvgIcon Width="18"
+                                  Height="18"
+                                  Margin="0,0,8,0"
+                                  Source="{Binding ElementName=Root, Path=IconSource}" />
+
+                <!-- Month Year -->
+                <TextBlock Style="{StaticResource MonthPickerButtonTextStyle}"
+                           Text="{Binding ElementName=Root, Path=SelectedMonth}" />
+            </StackPanel>
+        </ToggleButton>
+
+        <!-- Popup -->
+        <Popup x:Name="PartPopup"
+               PlacementTarget="{Binding ElementName=DropButton}"
+               Placement="Bottom"
+               AllowsTransparency="True"
+               StaysOpen="False"
+               Opened="Popup_Opened"
+               Closed="Popup_Closed"
+               IsOpen="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}">
+
+            <Border x:Name="PopupRoot"
+                    Style="{StaticResource MonthPickerPopupBorderStyle}"
+                    Opacity="0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18"
+                                      ShadowDepth="6"
+                                      Opacity="0.20"
+                                      Color="#000000"/>
+                </Border.Effect>
+
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                </Border.RenderTransform>
+                <Border.RenderTransformOrigin>0.5,0</Border.RenderTransformOrigin>
+
+                <StackPanel>
+
+                    <!-- Header: "February 2026" + month nav -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Style="{Binding ElementName=Root, Path=NavButtonStyle}"
+                                Click="PrevMonth_Click"
+                                Content="◀"/>
+
+                        <TextBlock Grid.Column="1"
+                                   Style="{StaticResource MonthPickerHeaderTextStyle}"
+                                   Text="{Binding ElementName=Root, Path=PreviewMonth}" />
+
+                        <Button Grid.Column="2"
+                                Style="{Binding ElementName=Root, Path=NavButtonStyle}"
+                                Click="NextMonth_Click"
+                                Content="▶"/>
+                    </Grid>
+
+                    <!-- Months -->
+                    <UniformGrid x:Name="MonthsGrid"
+                                 Columns="3"
+                                 Rows="4"
+                                 Style="{StaticResource MonthPickerMonthsGridStyle}">
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Jan" Tag="1"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Feb" Tag="2"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Mar" Tag="3"  Click="Month_Click"/>
+
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Apr" Tag="4"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="May" Tag="5"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Jun" Tag="6"  Click="Month_Click"/>
+
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Jul" Tag="7"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Aug" Tag="8"  Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Sep" Tag="9"  Click="Month_Click"/>
+
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Oct" Tag="10" Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Nov" Tag="11" Click="Month_Click"/>
+                        <Button Style="{StaticResource MonthPickerMonthButtonStyle}" Content="Dec" Tag="12" Click="Month_Click"/>
+                    </UniformGrid>
+                    
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource Brush.TextMuted}"
+                                   FontSize="11"
+                                   Text="Tip: Shift+Click arrows = ±1 year" />
+
+                        <Button Grid.Column="1"
+                                Style="{StaticResource MonthPickerFooterButtonStyle}"
+                                Click="GoToToday_Click"
+                                Content="This month" />
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

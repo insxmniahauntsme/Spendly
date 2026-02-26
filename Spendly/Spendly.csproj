@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>Resources\Icons\icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,6 +33,37 @@
         <ProjectReference Include="..\Spendly.Monobank\Spendly.Monobank.csproj"/>
         <ProjectReference Include="..\Spendly.Postgresql\Spendly.Postgresql.csproj"/>
         <ProjectReference Include="..\Spendly.Sqlite\Spendly.Sqlite.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\Dashboard\DashboardHeaderView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\Dashboard\DashboardView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\Transactions\TransactionsHeaderView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Views\Transactions\TransactionsView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Controls\MonthPicker\MonthPicker.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Controls\SvgIcon.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
     <Target Name="StripSvgFromCompile" BeforeTargets="CoreCompile">

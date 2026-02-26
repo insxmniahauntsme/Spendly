@@ -1,8 +1,12 @@
-<UserControl x:Class="Spendly.Views.DashboardView"
+<UserControl x:Class="Spendly.Views.Dashboard.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Spendly.Controls"
-             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dashboard="clr-namespace:Spendly.Controls.Dashboard"
+             mc:Ignorable="d">
 
     <Grid Background="{StaticResource Brush.MainBg}">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -11,33 +15,33 @@
 
                 <!-- KPI row -->
                 <UniformGrid Columns="4">
-                    <controls:KpiCard Margin="0,0,12,12"
+                    <dashboard:KpiCard Margin="0,0,12,12"
                                       Variant="Success"
-                                      Title="Доходи (міс.)"
-                                      ValueText="₴ 42 500"
-                                      BadgeText="▲ +12.4%"
+                                      Title="Income (month)"
+                                      ValueText="{Binding IncomeMonthText}"
+                                      BadgeText="{Binding IncomeMonthBadgeText}"
                                       SubText=""/>
 
-                    <controls:KpiCard Margin="0,0,12,12"
+                    <dashboard:KpiCard Margin="0,0,12,12"
                                       Variant="Danger"
-                                      Title="Витрати (міс.)"
-                                      ValueText="₴ 28 340"
-                                      BadgeText="▼ +8.1%"
+                                      Title="Expenses (month)"
+                                      ValueText="{Binding ExpenseMonthText}"
+                                      BadgeText="{Binding ExpenseMonthBadgeText}"
                                       SubText=""/>
 
-                    <controls:KpiCard Margin="0,0,12,12"
+                    <dashboard:KpiCard Margin="0,0,12,12"
                                       Variant="Primary"
-                                      Title="Залишок"
-                                      ValueText="₴ 14 160"
+                                      Title="Balance"
+                                      ValueText="{Binding BalanceText}"
                                       BadgeText=""
-                                      SubText="33.3% від доходу"/>
+                                      SubText="{Binding BalanceSubText}"/>
 
-                    <controls:KpiCard Margin="0,0,0,12"
+                    <dashboard:KpiCard Margin="0,0,0,12"
                                       Variant="Warning"
-                                      Title="Транзакцій"
-                                      ValueText="47"
+                                      Title="Transactions"
+                                      ValueText="{Binding TransactionsCountText}"
                                       BadgeText=""
-                                      SubText="за поточний місяць"/>
+                                      SubText="on current month"/>
                 </UniformGrid>
 
                 <!-- CHARTS ROW -->
@@ -70,11 +74,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel>
-                                    <TextBlock Text="Доходи / Витрати"
+                                    <TextBlock Text="Incomes / Expenses"
                                                FontSize="14"
                                                FontWeight="SemiBold"
                                                Foreground="{StaticResource Brush.TextPrimary}"/>
-                                    <TextBlock Text="ОСТАННІ 6 МІСЯЦІВ"
+                                    <TextBlock Text="LAST 6 MONTHS"
                                                Margin="0,4,0,0"
                                                FontSize="11"
                                                Foreground="{StaticResource Brush.TextMuted}"/>
@@ -89,7 +93,7 @@
                                         <Border Width="8" Height="8" CornerRadius="3"
                                                 Background="{StaticResource Brush.Success}"
                                                 VerticalAlignment="Center"/>
-                                        <TextBlock Text="Доходи"
+                                        <TextBlock Text="Incomes"
                                                    Margin="8,0,0,0"
                                                    FontSize="11"
                                                    Foreground="{StaticResource Brush.TextMuted}"/>
@@ -99,7 +103,7 @@
                                         <Border Width="8" Height="8" CornerRadius="3"
                                                 Background="{StaticResource Brush.Danger}"
                                                 VerticalAlignment="Center"/>
-                                        <TextBlock Text="Витрати"
+                                        <TextBlock Text="Expenses"
                                                    Margin="8,0,0,0"
                                                    FontSize="11"
                                                    Foreground="{StaticResource Brush.TextMuted}"/>
@@ -137,13 +141,13 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="По категоріях"
+                            <TextBlock Text="By categories"
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource Brush.TextPrimary}"/>
 
                             <TextBlock Grid.Row="2"
-                                       Text="ПОТОЧНИЙ МІСЯЦЬ"
+                                       Text="CURRENT MONTH"
                                        FontSize="11"
                                        Foreground="{StaticResource Brush.TextMuted}"/>
 
@@ -209,7 +213,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Останні транзакції"
+                            <TextBlock Text="Recent transactions"
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource Brush.TextPrimary}"/>
@@ -218,7 +222,7 @@
                                     Style="{StaticResource HeaderOutlineButtonStyle}"
                                     Width="150"
                                     Height="32"
-                                    Content="Переглянути всі →"/>
+                                    Content="Show all →"/>
                         </Grid>
 
                         <ItemsControl Grid.Row="2"
@@ -252,14 +256,25 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding DateText}"
-                                                       FontSize="11"
+                                            <TextBlock Text="{Binding Amount}"
+                                                       FontSize="14">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Type}" Value="Expense">
+                                                                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Type}" Value="Income">
+                                                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Date}"
+                                                       FontSize="12"
                                                        Foreground="{StaticResource Brush.TextMuted}"
-                                                       HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{Binding AmountText}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{Binding AmountBrush}"
                                                        HorizontalAlignment="Right"/>
                                         </StackPanel>
                                     </Grid>

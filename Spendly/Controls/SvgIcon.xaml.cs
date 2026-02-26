@@ -9,7 +9,7 @@ namespace Spendly.Controls;
 
 public partial class SvgIcon
 {
-    private static readonly ConcurrentDictionary<string, SKPicture?> _cache = new();
+    private static readonly ConcurrentDictionary<string, SKPicture?> Cache = new();
 
     public static readonly DependencyProperty SourceProperty =
         DependencyProperty.Register(
@@ -44,7 +44,7 @@ public partial class SvgIcon
         if (string.IsNullOrWhiteSpace(Source))
             return;
 
-        var picture = _cache.GetOrAdd(Source, LoadPicture);
+        var picture = Cache.GetOrAdd(Source, LoadPicture);
         if (picture is null)
             return;
 
@@ -69,10 +69,10 @@ public partial class SvgIcon
         {
             if (Uri.TryCreate(key, UriKind.Absolute, out var uri) && uri.Scheme == "pack")
             {
-                var sri = Application.GetResourceStream(uri);
+                var sri = System.Windows.Application.GetResourceStream(uri);
                 var stream = sri?.Stream;
 
-                stream ??= Application.GetContentStream(uri)?.Stream;
+                stream ??= System.Windows.Application.GetContentStream(uri)?.Stream;
 
                 if (stream is null) return null;
 
