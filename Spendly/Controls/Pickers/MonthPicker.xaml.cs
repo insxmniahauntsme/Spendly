@@ -1,16 +1,21 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
-using Spendly.Models;
 
-namespace Spendly.Controls.MonthPicker;
+namespace Spendly.Controls.Pickers;
 
-// TODO: Mdaaaaa...
-public partial class MonthPicker
+public partial class MonthPicker : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
     public MonthPicker()
     {
         InitializeComponent();
@@ -19,60 +24,63 @@ public partial class MonthPicker
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        // Ensure default
-        if (SelectedMonth.Year == 0)
-            SelectedMonth = new YearMonth(DateTime.Today.Year, DateTime.Today.Month);
+        if (!IsValid(PreviewMonth))
+        {
+            PreviewMonth = SelectedMonth is not null
+                ? new DateOnly(SelectedMonth.Value.Year, SelectedMonth.Value.Month, 1)
+                : new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
+        }
 
-        // Provide safe defaults for styles if user didn't pass them
         NavButtonStyle ??= TryFindStyle("MonthPickerNavButtonStyle");
+        RefreshTextBindings();
     }
 
     private Style? TryFindStyle(string key)
     {
-        try { return (Style)FindResource(key); }
-        catch { return null; }
+        try
+        {
+            return (Style)FindResource(key);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    // Dependency Properties
+    public string SelectedMonthText =>
+        SelectedMonth?.ToDateTime(TimeOnly.MinValue).ToString("MMMM yyyy") ?? "All time";
+
+    public string PreviewMonthText =>
+        PreviewMonth.ToDateTime(TimeOnly.MinValue).ToString("MMMM yyyy");
+
+    public DateOnly? SelectedMonth
+    {
+        get => (DateOnly?)GetValue(SelectedMonthProperty);
+        set => SetValue(SelectedMonthProperty, value);
+    }
+
     public static readonly DependencyProperty SelectedMonthProperty =
         DependencyProperty.Register(
             nameof(SelectedMonth),
-            typeof(YearMonth),
+            typeof(DateOnly?),
             typeof(MonthPicker),
             new FrameworkPropertyMetadata(
-                new YearMonth(DateTime.Today.Year, DateTime.Today.Month),
+                null,
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 OnSelectedMonthChanged));
 
-    public YearMonth SelectedMonth
+    public DateOnly PreviewMonth
     {
-        get => (YearMonth)GetValue(SelectedMonthProperty);
-        set => SetValue(SelectedMonthProperty, value);
-    }
-    
-    public static readonly DependencyProperty PreviewMonthProperty =
-        DependencyProperty.Register(
-            nameof(PreviewMonth),
-            typeof(YearMonth),
-            typeof(MonthPicker),
-            new PropertyMetadata(default(YearMonth)));
-
-    public YearMonth PreviewMonth
-    {
-        get => (YearMonth)GetValue(PreviewMonthProperty);
+        get => (DateOnly)GetValue(PreviewMonthProperty);
         set => SetValue(PreviewMonthProperty, value);
     }
 
-    private static void OnSelectedMonthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var c = (MonthPicker)d;
-        if (c is { IsLoaded: true, IsOpen: true })
-            c.RefreshMonthHighlights();
-    }
-
-    public static readonly DependencyProperty IsOpenProperty =
-        DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(MonthPicker),
-            new PropertyMetadata(false));
+    public static readonly DependencyProperty PreviewMonthProperty =
+        DependencyProperty.Register(
+            nameof(PreviewMonth),
+            typeof(DateOnly),
+            typeof(MonthPicker),
+            new PropertyMetadata(new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1)));
 
     public bool IsOpen
     {
@@ -80,8 +88,12 @@ public partial class MonthPicker
         set => SetValue(IsOpenProperty, value);
     }
 
-    public static readonly DependencyProperty ButtonStyleProperty =
-        DependencyProperty.Register(nameof(ButtonStyle), typeof(Style), typeof(MonthPicker));
+    public static readonly DependencyProperty IsOpenProperty =
+        DependencyProperty.Register(
+            nameof(IsOpen),
+            typeof(bool),
+            typeof(MonthPicker),
+            new PropertyMetadata(false));
 
     public Style? ButtonStyle
     {
@@ -89,13 +101,28 @@ public partial class MonthPicker
         set => SetValue(ButtonStyleProperty, value);
     }
 
-    public static readonly DependencyProperty NavButtonStyleProperty =
-        DependencyProperty.Register(nameof(NavButtonStyle), typeof(Style), typeof(MonthPicker));
+    public static readonly DependencyProperty ButtonStyleProperty =
+        DependencyProperty.Register(
+            nameof(ButtonStyle),
+            typeof(Style),
+            typeof(MonthPicker));
 
     public Style? NavButtonStyle
     {
         get => (Style?)GetValue(NavButtonStyleProperty);
         set => SetValue(NavButtonStyleProperty, value);
+    }
+
+    public static readonly DependencyProperty NavButtonStyleProperty =
+        DependencyProperty.Register(
+            nameof(NavButtonStyle),
+            typeof(Style),
+            typeof(MonthPicker));
+
+    public string IconSource
+    {
+        get => (string)GetValue(IconSourceProperty);
+        set => SetValue(IconSourceProperty, value);
     }
 
     public static readonly DependencyProperty IconSourceProperty =
@@ -105,31 +132,44 @@ public partial class MonthPicker
             typeof(MonthPicker),
             new PropertyMetadata("pack://application:,,,/Resources/Icons/calendar.svg"));
 
-    public string IconSource
+    private static void OnSelectedMonthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        get => (string)GetValue(IconSourceProperty);
-        set => SetValue(IconSourceProperty, value);
+        if (d is not MonthPicker picker)
+            return;
+
+        if (e.NewValue is DateOnly selected)
+        {
+            picker.PreviewMonth = new DateOnly(selected.Year, selected.Month, 1);
+        }
+
+        picker.RefreshTextBindings();
+
+        if (picker.IsLoaded)
+            picker.RefreshMonthHighlights();
     }
 
-    // Popup
+    private void DropButton_OnPreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        SelectedMonth = null;
+        IsOpen = false;
+        RefreshTextBindings();
+        e.Handled = true;
+    }
+
     private void Popup_Opened(object sender, EventArgs e)
     {
-        PreviewMonth = IsValid(SelectedMonth)
-            ? SelectedMonth
-            : new YearMonth(DateTime.Today.Year, DateTime.Today.Month);
+        PreviewMonth = SelectedMonth is not null
+            ? new DateOnly(SelectedMonth.Value.Year, SelectedMonth.Value.Month, 1)
+            : new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
 
         CenterPopupUnderButton();
+        RefreshTextBindings();
         RefreshMonthHighlights();
         PlayPopupOpenAnimation();
     }
-    
+
     private void Popup_Closed(object sender, EventArgs e)
     {
-        if (!IsValid(PreviewMonth))
-            return;
-
-        if (PreviewMonth != SelectedMonth)
-            SelectedMonth = PreviewMonth;
     }
 
     private void CenterPopupUnderButton()
@@ -186,18 +226,19 @@ public partial class MonthPicker
         sb.Begin();
     }
 
-    // Header nav (month paging)
     private void PrevMonth_Click(object sender, RoutedEventArgs e)
     {
         var delta = GetDeltaByModifiers(isPrev: true);
-        PreviewMonth = AddMonths(PreviewMonth, delta);
+        PreviewMonth = PreviewMonth.AddMonths(delta);
+        RefreshTextBindings();
         RefreshMonthHighlights();
     }
 
     private void NextMonth_Click(object sender, RoutedEventArgs e)
     {
         var delta = GetDeltaByModifiers(isPrev: false);
-        PreviewMonth = AddMonths(PreviewMonth, delta);
+        PreviewMonth = PreviewMonth.AddMonths(delta);
+        RefreshTextBindings();
         RefreshMonthHighlights();
     }
 
@@ -211,37 +252,34 @@ public partial class MonthPicker
         return isPrev ? -step : step;
     }
 
-    private static YearMonth AddMonths(YearMonth ym, int delta)
-    {
-        var dt = new DateTime(ym.Year, ym.Month, 1).AddMonths(delta);
-        return new YearMonth(dt.Year, dt.Month);
-    }
-    
     private void GoToToday_Click(object sender, RoutedEventArgs e)
     {
-        var now = DateTime.Today;
-        PreviewMonth = new YearMonth(now.Year, now.Month);
-        RefreshMonthHighlights();
+        var today = DateTime.Today;
+        SelectedMonth = new DateOnly(today.Year, today.Month, 1);
+        RefreshTextBindings();
         IsOpen = false;
     }
 
-    // Month click
     private void Month_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button btn) return;
-        if (btn.Tag is not string s || !int.TryParse(s, out var month)) return;
+        if (sender is not Button button || button.Tag is null)
+            return;
 
-        PreviewMonth = new YearMonth(PreviewMonth.Year, month);
+        if (!int.TryParse(button.Tag.ToString(), out var month))
+            return;
+
+        SelectedMonth = new DateOnly(PreviewMonth.Year, month, 1);
+        RefreshTextBindings();
         IsOpen = false;
     }
 
-    private static bool IsValid(YearMonth ym)
-        => ym is { Year: > 0, Month: >= 1 and <= 12 };
-    
-    // Highlighting (today/selected)
+    private static bool IsValid(DateOnly date)
+        => date.Year > 0 && date.Month is >= 1 and <= 12;
+
     private void RefreshMonthHighlights()
     {
-        if (PopupRoot is null) return;
+        if (PopupRoot is null)
+            return;
 
         var border = (Brush)FindResource("Brush.Border");
         var textPrimary = (Brush)FindResource("Brush.TextPrimary");
@@ -250,32 +288,28 @@ public partial class MonthPicker
         var selectedGradient = (Brush)FindResource("Brush.MonthSelected");
 
         var today = DateTime.Today;
-        var selected = IsValid(PreviewMonth)
+        var preview = IsValid(PreviewMonth)
             ? PreviewMonth
-            : new YearMonth(DateTime.Today.Year, DateTime.Today.Month);
+            : new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
 
         foreach (var btn in FindVisualChildren<Button>(MonthsGrid))
         {
             if (btn.Tag is not string s || !int.TryParse(s, out var m))
                 continue;
 
-            // Reset (keep hover working from style)
             btn.ClearValue(Button.BackgroundProperty);
             btn.BorderBrush = border;
             btn.Foreground = textPrimary;
             btn.Effect = null;
 
-            // Today: thin primary border
-            if (today.Year == selected.Year && m == today.Month)
-            {
+            if (today.Year == preview.Year && today.Month == m)
                 btn.BorderBrush = primaryA60;
-            }
 
-            // Selected: gradient + glow
-            if (m != selected.Month) continue;
+            if (m != preview.Month)
+                continue;
+
             btn.Background = selectedGradient;
             btn.BorderBrush = primary;
-
             btn.Effect = CreateGlow(primary);
         }
     }
@@ -299,11 +333,18 @@ public partial class MonthPicker
         for (var i = 0; i < count; i++)
         {
             var child = VisualTreeHelper.GetChild(root, i);
+
             if (child is T typed)
                 yield return typed;
 
             foreach (var sub in FindVisualChildren<T>(child))
                 yield return sub;
         }
+    }
+
+    private void RefreshTextBindings()
+    {
+        RaisePropertyChanged(nameof(SelectedMonthText));
+        RaisePropertyChanged(nameof(PreviewMonthText));
     }
 }

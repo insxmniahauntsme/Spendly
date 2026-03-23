@@ -1,42 +1,65 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Spendly.ViewModels.Analytics;
+using Spendly.ViewModels.Dashboard;
 using Spendly.ViewModels.Transactions;
 
 namespace Spendly.ViewModels;
 
-public partial class MainLayoutViewModel(
-	Dashboard.DashboardViewModel dashboardVm,
-	TransactionsViewModel transactionsVm)
-	: ObservableObject
+public partial class MainLayoutViewModel : ObservableObject
 {
-	private Dashboard.DashboardViewModel DashboardVm { get; } = dashboardVm;
-	private TransactionsViewModel TransactionsVm { get; } = transactionsVm;
+	public DashboardViewModel DashboardVm { get; }
+	public TransactionsViewModel TransactionsVm { get; }
+	public AnalyticsViewModel AnalyticsVm { get; }
 
-	[ObservableProperty] private ObservableObject _currentVm = dashboardVm;
+	[ObservableProperty]
+	private ObservableObject _currentVm = null!;
 
-	public bool IsDashboardSelected
-	{
-		get => CurrentVm == DashboardVm;
-		set
-		{
-			if (value)
-				CurrentVm = DashboardVm;
-		}
-	}
+	[ObservableProperty]
+	private bool _isDashboardSelected;
+
+	[ObservableProperty]
+	private bool _isTransactionsSelected;
 	
-	public bool IsTransactionsSelected
+	[ObservableProperty]
+	private bool _isAnalyticsSelected;
+
+	public MainLayoutViewModel(
+		DashboardViewModel dashboardVm,
+		TransactionsViewModel transactionsVm,
+		AnalyticsViewModel analyticsVm)
 	{
-		get => CurrentVm == TransactionsVm;
-		set
-		{
-			if (value)
-				CurrentVm = TransactionsVm;
-		}
+		DashboardVm = dashboardVm;
+		TransactionsVm = transactionsVm;
+		AnalyticsVm = analyticsVm;
+
+		NavigateToDashboard();
 	}
 
 	[RelayCommand]
-	private void ShowDashboard() => CurrentVm = DashboardVm;
-	
+	private void NavigateToDashboard()
+	{
+		CurrentVm = DashboardVm;
+		IsDashboardSelected = true;
+		IsTransactionsSelected = false;
+		IsAnalyticsSelected = false;
+	}
+
 	[RelayCommand]
-	private void ShowTransactions() => CurrentVm = TransactionsVm;
+	private void NavigateToTransactions()
+	{
+		CurrentVm = TransactionsVm;
+		IsDashboardSelected = false;
+		IsTransactionsSelected = true;
+		IsAnalyticsSelected = false;
+	}
+
+	[RelayCommand]
+	private void NavigateToAnalytics()
+	{
+		CurrentVm = AnalyticsVm;
+		IsDashboardSelected = false;
+		IsTransactionsSelected = false;
+		IsAnalyticsSelected = true;
+	}
 }

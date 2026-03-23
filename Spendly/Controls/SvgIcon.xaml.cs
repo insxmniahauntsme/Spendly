@@ -38,7 +38,6 @@ public partial class SvgIcon
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        
         canvas.Clear(SKColors.Transparent);
 
         if (string.IsNullOrWhiteSpace(Source))
@@ -52,15 +51,25 @@ public partial class SvgIcon
         if (bounds.Width <= 0 || bounds.Height <= 0)
             return;
 
-        var scale = Math.Min(e.Info.Width / bounds.Width, e.Info.Height / bounds.Height);
+        canvas.Save();
+
+        var scaleX = e.Info.Width / bounds.Width;
+        var scaleY = e.Info.Height / bounds.Height;
+        var scale = Math.Min(scaleX, scaleY);
+
         var dx = (e.Info.Width - bounds.Width * scale) / 2f;
         var dy = (e.Info.Height - bounds.Height * scale) / 2f;
+
+        dx = (float)Math.Round(dx);
+        dy = (float)Math.Round(dy);
 
         canvas.Translate(dx, dy);
         canvas.Scale(scale);
         canvas.Translate(-bounds.Left, -bounds.Top);
 
         canvas.DrawPicture(picture);
+
+        canvas.Restore();
     }
 
     private static SKPicture? LoadPicture(string key)

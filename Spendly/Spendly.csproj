@@ -24,6 +24,30 @@
     <ItemGroup>
         <Resource Include="Resources\Icons\file-report.svg" />
         <Resource Include="Resources\Icons\calendar.svg" />
+        <Resource Include="Resources\Icons\trash-bin.svg" />
+        <Resource Include="Resources\Icons\magnifying-glass.svg" />
+        <Resource Include="Resources\Icons\logo.svg" />
+        <Resource Include="Resources\Icons\folder.svg" />
+        <Resource Include="Resources\Icons\edit-pencil.svg" />
+        <Resource Include="Resources\Icons\credit-card.svg" />
+        <Resource Include="Resources\Icons\Categories\cafes-category.svg" />
+        <Resource Include="Resources\Icons\Categories\education-category.svg" />
+        <Resource Include="Resources\Icons\Categories\entertainment-category.svg" />
+        <Resource Include="Resources\Icons\Categories\gifts-category.svg" />
+        <Resource Include="Resources\Icons\Categories\health-category.svg" />
+        <Resource Include="Resources\Icons\Categories\insurance-category.svg" />
+        <Resource Include="Resources\Icons\Categories\investments-category.svg" />
+        <Resource Include="Resources\Icons\Categories\other-category.svg" />
+        <Resource Include="Resources\Icons\Categories\rent-category.svg" />
+        <Resource Include="Resources\Icons\Categories\sports-category.svg" />
+        <Resource Include="Resources\Icons\Categories\subscriptions-category.svg" />
+        <Resource Include="Resources\Icons\Categories\taxes-category.svg" />
+        <Resource Include="Resources\Icons\Categories\transport-category.svg" />
+        <Resource Include="Resources\Icons\Categories\travel-category.svg" />
+        <Resource Include="Resources\Icons\Categories\groceries-category.svg" />
+        <Resource Include="Resources\Icons\Categories\clothing-category.svg" />
+        <None Remove="Resources\Icons\Categories\salary-category.svg" />
+        <Resource Include="Resources\Icons\Categories\salary-category.svg" />
     </ItemGroup>
 
     <ItemGroup>
@@ -56,10 +80,25 @@
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
-      <Page Update="Controls\MonthPicker\MonthPicker.xaml">
+      <Page Update="Controls\SvgIcon.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Themes\TransactionFilters.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-      <Page Update="Controls\SvgIcon.xaml">
+      <Page Update="Controls\Pickers\AccountPicker.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Controls\Pickers\CategoryPicker.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Controls\Pickers\MonthPicker.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>

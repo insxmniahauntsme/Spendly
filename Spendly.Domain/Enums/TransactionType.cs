@@ -1,4 +1,4 @@
-namespace Spendly.Data.Enums;
+namespace Spendly.Domain.Enums;
 
 public enum TransactionType
 {

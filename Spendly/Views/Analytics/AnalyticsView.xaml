@@ -1,0 +1,531 @@
+﻿<UserControl x:Class="Spendly.Views.Analytics.AnalyticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Spendly.Controls"
+             xmlns:dashboard="clr-namespace:Spendly.Controls.Dashboard"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:analytics="clr-namespace:Spendly.Controls.Analytics"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <Style x:Key="ChipButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource Brush.MainBg}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20,20,20,16">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="General"
+                               Margin="0,0,0,10"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}" />
+                    <!-- TOP STATS -->
+                    <Grid Grid.Row="1" Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="1.7*" />
+                        </Grid.ColumnDefinitions>
+
+                        <analytics:AnalyticsBudgetCard Grid.Column="0"
+                                                       Title="Entertainment"
+                                                       BadgeText="OVERSPENT"
+                                                       IconSource="pack://application:,,,/Resources/Icons/Categories/entertainment-category.svg"
+                                                       CurrentText="₴ 3 450"
+                                                       LimitText="₴ 2 500"
+                                                       ProgressValue="1"
+                                                       Variant="{x:Static dashboard:KpiVariant.Danger}" />
+
+                        <analytics:AnalyticsBudgetCard Grid.Column="2"
+                                                       Title="Education"
+                                                       BadgeText="UNDERUSED"
+                                                       IconSource="pack://application:,,,/Resources/Icons/Categories/education-category.svg"
+                                                       CurrentText="₴ 400"
+                                                       LimitText="₴ 3 000"
+                                                       ProgressValue="0.13"
+                                                       Variant="{x:Static dashboard:KpiVariant.Success}" />
+
+                        <!-- Risk zone -->
+                        <Border Grid.Column="4"
+                                CornerRadius="12"
+                                Background="{StaticResource Brush.CardBg}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Padding="14">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border Background="{StaticResource Brush.WarningOverlay}"
+                                        CornerRadius="6"
+                                        Padding="8,4"
+                                        HorizontalAlignment="Left">
+                                    <TextBlock Text="RISK ZONE"
+                                               FontSize="10"
+                                               Foreground="{StaticResource Brush.Warning}" />
+                                </Border>
+
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="26"
+                                            Height="26"
+                                            CornerRadius="8"
+                                            Background="{StaticResource Brush.Primary.A10}">
+                                        <controls:SvgIcon Width="16"
+                                                          Height="16"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"
+                                                          Source="pack://application:,,,/Resources/Icons/Categories/transport-category.svg" />
+                                    </Border>
+
+                                    <TextBlock Grid.Column="1"
+                                               Margin="10,0,0,0"
+                                               VerticalAlignment="Center"
+                                               Text="Transport"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextPrimary}" />
+
+                                    <TextBlock Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Text="96%"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource Brush.Warning}" />
+                                </Grid>
+
+                                <Grid Grid.Row="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="26"
+                                            Height="26"
+                                            CornerRadius="8"
+                                            Background="{StaticResource Brush.Danger.A10}">
+                                        <controls:SvgIcon Width="16"
+                                                          Height="16"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"
+                                                          Source="pack://application:,,,/Resources/Icons/Categories/clothing-category.svg" />
+                                    </Border>
+
+                                    <TextBlock Grid.Column="1"
+                                               Margin="10,0,0,0"
+                                               VerticalAlignment="Center"
+                                               Text="Clothes"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextPrimary}" />
+
+                                    <TextBlock Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Text="85%"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource Brush.Warning}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Forecast -->
+                        <Border Grid.Column="6"
+                                CornerRadius="12"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Padding="18">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0"
+                                                     EndPoint="1,1">
+                                    <GradientStop Color="#1E1E28" Offset="0" />
+                                    <GradientStop Color="#19233B" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Grid HorizontalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="FORECAST BY END OF MONTH"
+                                               HorizontalAlignment="Center"
+                                               FontSize="11"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+
+                                    <TextBlock Margin="0,10,0,6"
+                                               HorizontalAlignment="Center"
+                                               Text="₴29 400"
+                                               FontSize="36"
+                                               FontWeight="Bold"
+                                               Foreground="#4B93FF" />
+
+                                    <TextBlock Text="Based on the current trend"
+                                               HorizontalAlignment="Center"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- CATEGORY + CHART -->
+                    <Border Grid.Row="2" CornerRadius="14"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            Padding="16,16,16,14"
+                            Margin="0,0,0,22">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="210" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="CHOOSE CATEGORY"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}" />
+
+                            <!-- Chips -->
+                            <ScrollViewer Grid.Row="2"
+                                          x:Name="CategoryChipsScrollViewer"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          PanningMode="HorizontalOnly"
+                                          PreviewMouseWheel="CategoryChipsScrollViewer_OnPreviewMouseWheel">
+                                <ItemsControl ItemsSource="{Binding CategoryChips}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Margin="0,0,10,0"
+                                                    Style="{StaticResource ChipButtonStyle}"
+                                                    Command="{Binding DataContext.SelectCategoryCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Border Padding="14,8"
+                                                        CornerRadius="18"
+                                                        BorderThickness="1">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background"
+                                                                    Value="{StaticResource Brush.HoverBg}" />
+                                                            <Setter Property="BorderBrush"
+                                                                    Value="{StaticResource Brush.Border}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsSelected}"
+                                                                             Value="True">
+                                                                    <Setter Property="Background"
+                                                                            Value="{StaticResource Brush.Primary.A10}" />
+                                                                    <Setter Property="BorderBrush"
+                                                                            Value="{StaticResource Brush.Primary}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <controls:SvgIcon Width="16"
+                                                                          Height="16"
+                                                                          VerticalAlignment="Center"
+                                                                          Source="{Binding Icon}" />
+
+                                                        <TextBlock Margin="8,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="13">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{StaticResource Brush.TextMuted}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsSelected}"
+                                                                                Value="True">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{StaticResource Brush.TextPrimary}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                            <!-- Line chart -->
+                            <Grid Grid.Row="4">
+                                <lvc:CartesianChart Series="{Binding TrendSeries}"
+                                                    XAxes="{Binding TrendXAxes}"
+                                                    YAxes="{Binding TrendYAxes}"
+                                                    LegendPosition="Hidden"
+                                                    TooltipPosition="Hidden"
+                                                    ZoomMode="None"
+                                                    Background="Transparent"
+                                                    Margin="-2,0,-8,0" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ACCOUNTS -->
+                <StackPanel>
+                    <TextBlock Text="Account breakdown"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}" />
+
+                    <TextBlock Margin="0,4,0,14"
+                               Text="MOST ACTIVE CARDS"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}" />
+
+                    <!-- account cards -->
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="14" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Monobank -->
+                        <Border Grid.Column="0"
+                                CornerRadius="12"
+                                Background="{StaticResource Brush.CardBg}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1">
+                            <Grid>
+                                <Border Height="6"
+                                        VerticalAlignment="Top"
+                                        CornerRadius="12,12,0,0"
+                                        Background="#43D9D9" />
+
+                                <StackPanel Margin="16,20,16,16">
+                                    <Border Background="{StaticResource Brush.DangerOverlay}"
+                                            CornerRadius="6"
+                                            Padding="8,4"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Text="TOP SPENDING ACCOUNT"
+                                                   FontSize="10"
+                                                   Foreground="{StaticResource Brush.Danger}" />
+                                    </Border>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                        <Border Width="34"
+                                                Height="34"
+                                                CornerRadius="10"
+                                                Background="#2A2A38">
+                                            <TextBlock Text="mono"
+                                                       FontSize="10"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource Brush.TextPrimary}" />
+                                        </Border>
+
+                                        <TextBlock Margin="12,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Text="Monobank"
+                                                   FontSize="18"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.TextPrimary}" />
+                                    </StackPanel>
+
+                                    <TextBlock Margin="0,22,0,0"
+                                               Text="Spent this month"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+
+                                    <TextBlock Margin="0,8,0,0"
+                                               Text="₴ 15 320"
+                                               FontSize="22"
+                                               Foreground="{StaticResource Brush.Danger}" />
+
+                                    <TextBlock Margin="0,6,0,0"
+                                               Text="54% of all expenses"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- PrivatBank -->
+                        <Border Grid.Column="2"
+                                CornerRadius="12"
+                                Background="{StaticResource Brush.CardBg}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1">
+                            <Grid>
+                                <Border Height="6"
+                                        VerticalAlignment="Top"
+                                        CornerRadius="12,12,0,0"
+                                        Background="{StaticResource Brush.Primary}" />
+
+                                <StackPanel Margin="16,20,16,16">
+                                    <Border Background="{StaticResource Brush.PrimaryOverlay}"
+                                            CornerRadius="6"
+                                            Padding="8,4"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Text="SECOND BY SPENDING"
+                                                   FontSize="10"
+                                                   Foreground="#4B93FF" />
+                                    </Border>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                        <Border Width="34"
+                                                Height="34"
+                                                CornerRadius="10"
+                                                Background="#D7F0C9">
+                                            <TextBlock Text="↱"
+                                                       FontSize="20"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="#2D6627" />
+                                        </Border>
+
+                                        <TextBlock Margin="12,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Text="PrivatBank"
+                                                   FontSize="18"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.TextPrimary}" />
+                                    </StackPanel>
+
+                                    <TextBlock Margin="0,22,0,0"
+                                               Text="Spent this month"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+
+                                    <TextBlock Margin="0,8,0,0"
+                                               Text="₴ 9 800"
+                                               FontSize="22"
+                                               Foreground="#4B93FF" />
+
+                                    <TextBlock Margin="0,6,0,0"
+                                               Text="35% of all expenses"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- bars -->
+                    <TextBlock Text="EXPENSE BREAKDOWN"
+                               FontSize="11"
+                               Foreground="{StaticResource Brush.TextMuted}" />
+
+                    <ItemsControl Margin="0,12,0,0"
+                                  ItemsSource="{Binding AccountBreakdownItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="44" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Border Width="28"
+                                                Height="28"
+                                                CornerRadius="8"
+                                                Background="{Binding IconBackground}">
+                                            <TextBlock Text="{Binding IconText}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource Brush.TextPrimary}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="10" />
+                                        </Border>
+
+                                        <TextBlock Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Name}"
+                                                   FontSize="13"
+                                                   Foreground="{StaticResource Brush.TextPrimary}" />
+                                    </StackPanel>
+
+                                    <Grid Grid.Column="1"
+                                          Height="7"
+                                          VerticalAlignment="Center"
+                                          Margin="10,0,12,0">
+                                        <Border Background="#38385A"
+                                                CornerRadius="6" />
+
+                                        <Border HorizontalAlignment="Left"
+                                                Background="{Binding FillBrush}"
+                                                CornerRadius="6"
+                                                Width="{Binding BarWidth}" />
+                                    </Grid>
+
+                                    <TextBlock Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Text="{Binding PercentText}"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Brush.TextMuted}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

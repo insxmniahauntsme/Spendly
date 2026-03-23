@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -10,9 +11,9 @@ using SkiaSharp;
 using Spendly.Application.Handlers.Dashboard.Requests;
 using Spendly.Application.Models.Dashboard;
 using Spendly.Data.Enums;
-using Spendly.Domain.Models;
-using Spendly.Models;
-using Spendly.Views.Dashboard;
+using Spendly.Domain.Enums;
+using Spendly.Helpers;
+using Transaction = Spendly.Domain.Models.Transaction;
 
 namespace Spendly.ViewModels.Dashboard;
 
@@ -21,7 +22,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IMediator _mediator;
     private CancellationTokenSource? _loadCts;
     
-    [ObservableProperty] private YearMonth _selectedMonth = new(DateTime.Today.Year, DateTime.Today.Month);
+    [ObservableProperty] private DateOnly? _selectedMonth = new(DateTime.Now.Year, DateTime.Now.Month, 1);
     
     // Kpi cards
     [ObservableProperty] private string _incomeMonthText = "—";
@@ -54,7 +55,7 @@ public partial class DashboardViewModel : ObservableObject
         _ = LoadDataForMonthAsync(SelectedMonth);
     }
 
-    private async Task LoadDataForMonthAsync(YearMonth month)
+    private async Task LoadDataForMonthAsync(DateOnly? month)
     {
         _loadCts?.Cancel();
         _loadCts = new CancellationTokenSource();
@@ -63,7 +64,7 @@ public partial class DashboardViewModel : ObservableObject
         try
         {
             var data = await _mediator.Send(
-                new GetDashboardDataRequest(month.Year, month.Month),
+                new GetDashboardDataRequest(month),
                 token);
 
             if (token.IsCancellationRequested) return;
@@ -79,7 +80,7 @@ public partial class DashboardViewModel : ObservableObject
         }
     }
     
-    partial void OnSelectedMonthChanged(YearMonth value){
+    partial void OnSelectedMonthChanged(DateOnly? value){
         _ = LoadDataForMonthAsync(value);
     }
 
@@ -217,11 +218,16 @@ public partial class DashboardViewModel : ObservableObject
                      .OrderByDescending(x => x.DateUtc)
                      .Take(3))
         {
+            var categoryName = string.IsNullOrWhiteSpace(t.Category?.Name)
+                ? "Other"
+                : t.Category!.Name;
+
             RecentTransactions.Add(new TransactionRow
             {
-                IconText = BuildIconText(t),
+                CategoryIconSource = CategoryIconProvider.GetIcon(categoryName),
                 Title = string.IsNullOrWhiteSpace(t.Comment) ? "(без коментаря)" : t.Comment,
-                Category = t.Category?.Name ?? "Other", 
+                Category = categoryName,
+                Account = t.Account.Name,
                 Date = t.DateUtc.ToLocalTime().ToString("dd.MM.yy"),
                 Amount = FormatAmount(t),
                 Type = t.Type
@@ -242,13 +248,5 @@ public partial class DashboardViewModel : ObservableObject
     {
         var sign = t.Type == TransactionType.Expense ? "−" : "+";
         return $"{sign} ₴ {t.Amount:N0}";
-    }
-
-    private static string BuildIconText(Transaction t)
-    {
-        if (t.Type == TransactionType.Income) return "₴";
-
-        var name = t.Category?.Name ?? "?";
-        return string.IsNullOrEmpty(name) ? "•" : name[0].ToString().ToUpperInvariant();
     }
 }

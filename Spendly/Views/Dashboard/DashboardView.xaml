@@ -6,6 +6,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dashboard="clr-namespace:Spendly.Controls.Dashboard"
+             xmlns:views="clr-namespace:Spendly.Views"
+             xmlns:viewModels="clr-namespace:Spendly.ViewModels"
              mc:Ignorable="d">
 
     <Grid Background="{StaticResource Brush.MainBg}">
@@ -16,40 +18,40 @@
                 <!-- KPI row -->
                 <UniformGrid Columns="4">
                     <dashboard:KpiCard Margin="0,0,12,12"
-                                      Variant="Success"
-                                      Title="Income (month)"
-                                      ValueText="{Binding IncomeMonthText}"
-                                      BadgeText="{Binding IncomeMonthBadgeText}"
-                                      SubText=""/>
+                                       Variant="Success"
+                                       Title="Income (month)"
+                                       ValueText="{Binding IncomeMonthText}"
+                                       BadgeText="{Binding IncomeMonthBadgeText}"
+                                       SubText="" />
 
                     <dashboard:KpiCard Margin="0,0,12,12"
-                                      Variant="Danger"
-                                      Title="Expenses (month)"
-                                      ValueText="{Binding ExpenseMonthText}"
-                                      BadgeText="{Binding ExpenseMonthBadgeText}"
-                                      SubText=""/>
+                                       Variant="Danger"
+                                       Title="Expenses (month)"
+                                       ValueText="{Binding ExpenseMonthText}"
+                                       BadgeText="{Binding ExpenseMonthBadgeText}"
+                                       SubText="" />
 
                     <dashboard:KpiCard Margin="0,0,12,12"
-                                      Variant="Primary"
-                                      Title="Balance"
-                                      ValueText="{Binding BalanceText}"
-                                      BadgeText=""
-                                      SubText="{Binding BalanceSubText}"/>
+                                       Variant="Primary"
+                                       Title="Balance"
+                                       ValueText="{Binding BalanceText}"
+                                       BadgeText=""
+                                       SubText="{Binding BalanceSubText}" />
 
                     <dashboard:KpiCard Margin="0,0,0,12"
-                                      Variant="Warning"
-                                      Title="Transactions"
-                                      ValueText="{Binding TransactionsCountText}"
-                                      BadgeText=""
-                                      SubText="on current month"/>
+                                       Variant="Warning"
+                                       Title="Transactions"
+                                       ValueText="{Binding TransactionsCountText}"
+                                       BadgeText=""
+                                       SubText="on current month" />
                 </UniformGrid>
 
                 <!-- CHARTS ROW -->
                 <Grid Margin="0,4,0,12">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="320"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="320" />
                     </Grid.ColumnDefinitions>
 
                     <!-- LEFT: Income/Expense bar chart -->
@@ -61,27 +63,27 @@
                             Padding="16">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="12"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
                             <!-- Header -->
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel>
                                     <TextBlock Text="Incomes / Expenses"
                                                FontSize="14"
                                                FontWeight="SemiBold"
-                                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                                               Foreground="{StaticResource Brush.TextPrimary}" />
                                     <TextBlock Text="LAST 6 MONTHS"
                                                Margin="0,4,0,0"
                                                FontSize="11"
-                                               Foreground="{StaticResource Brush.TextMuted}"/>
+                                               Foreground="{StaticResource Brush.TextMuted}" />
                                 </StackPanel>
 
                                 <!-- Legend (simple) -->
@@ -92,34 +94,34 @@
                                     <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
                                         <Border Width="8" Height="8" CornerRadius="3"
                                                 Background="{StaticResource Brush.Success}"
-                                                VerticalAlignment="Center"/>
+                                                VerticalAlignment="Center" />
                                         <TextBlock Text="Incomes"
                                                    Margin="8,0,0,0"
                                                    FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                                   Foreground="{StaticResource Brush.TextMuted}" />
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal">
                                         <Border Width="8" Height="8" CornerRadius="3"
                                                 Background="{StaticResource Brush.Danger}"
-                                                VerticalAlignment="Center"/>
+                                                VerticalAlignment="Center" />
                                         <TextBlock Text="Expenses"
                                                    Margin="8,0,0,0"
                                                    FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextMuted}"/>
+                                                   Foreground="{StaticResource Brush.TextMuted}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
 
                             <!-- Chart -->
                             <lvc:CartesianChart Grid.Row="2"
-                                               Series="{Binding IncomeExpenseSeries}"
-                                               XAxes="{Binding MonthsAxis}"
-                                               YAxes="{Binding MoneyAxis}"
-                                               LegendPosition="Hidden"
-                                               TooltipPosition="Top"
-                                               ZoomMode="None"
-                                               Background="Transparent"/>
+                                                Series="{Binding IncomeExpenseSeries}"
+                                                XAxes="{Binding MonthsAxis}"
+                                                YAxes="{Binding MoneyAxis}"
+                                                LegendPosition="Hidden"
+                                                TooltipPosition="Top"
+                                                ZoomMode="None"
+                                                Background="Transparent" />
                         </Grid>
                     </Border>
 
@@ -132,24 +134,24 @@
                             Padding="16">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="6"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="12"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="12"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="6" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="By categories"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                                       Foreground="{StaticResource Brush.TextPrimary}" />
 
                             <TextBlock Grid.Row="2"
                                        Text="CURRENT MONTH"
                                        FontSize="11"
-                                       Foreground="{StaticResource Brush.TextMuted}"/>
+                                       Foreground="{StaticResource Brush.TextMuted}" />
 
                             <lvc:PieChart Grid.Row="4"
                                           Series="{Binding CategorySeries}"
@@ -157,7 +159,7 @@
                                           TooltipPosition="Top"
                                           InitialRotation="-90"
                                           Background="Transparent"
-                                          Height="160"/>
+                                          Height="160" />
 
                             <!-- category list -->
                             <ItemsControl Grid.Row="6"
@@ -166,25 +168,25 @@
                                     <DataTemplate>
                                         <Grid Margin="0,8,0,0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
                                             <Border Width="10" Height="10" CornerRadius="3"
                                                     Background="{Binding ColorBrush}"
-                                                    VerticalAlignment="Center"/>
+                                                    VerticalAlignment="Center" />
 
                                             <TextBlock Grid.Column="1"
                                                        Margin="10,0,0,0"
                                                        FontSize="11"
                                                        Foreground="{StaticResource Brush.TextMuted}"
-                                                       Text="{Binding Name}"/>
+                                                       Text="{Binding Name}" />
 
                                             <TextBlock Grid.Column="2"
                                                        FontSize="11"
                                                        Foreground="{StaticResource Brush.TextMuted}"
-                                                       Text="{Binding PercentText}"/>
+                                                       Text="{Binding PercentText}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -202,27 +204,29 @@
 
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="14"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="14" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="Recent transactions"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                                       Foreground="{StaticResource Brush.TextPrimary}" />
 
                             <Button Grid.Column="1"
-                                    Style="{StaticResource HeaderOutlineButtonStyle}"
+                                    Style="{StaticResource OutlineButtonStyle}"
                                     Width="150"
                                     Height="32"
-                                    Content="Show all →"/>
+                                    Content="Show all →"
+                                    Command="{Binding DataContext.NavigateToTransactionsCommand,
+                                    RelativeSource={RelativeSource AncestorType={x:Type views:MainLayoutView}}}" />
                         </Grid>
 
                         <ItemsControl Grid.Row="2"
@@ -231,28 +235,24 @@
                                 <DataTemplate>
                                     <Grid Margin="0,10,0,10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="44"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="44" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- icon placeholder -->
-                                        <Border Width="36" Height="36" CornerRadius="10"
-                                                Background="{StaticResource Brush.HoverBg}">
-                                            <TextBlock Text="{Binding IconText}"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Foreground="{StaticResource Brush.TextMuted}"
-                                                       FontSize="12"/>
-                                        </Border>
+                                        <controls:SvgIcon Grid.Column="0"
+                                                          Width="26"
+                                                          Height="26"
+                                                          VerticalAlignment="Center"
+                                                          Source="{Binding CategoryIconSource}" />
 
-                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                        <StackPanel Grid.Column="1" Margin="4,0,0,0">
                                             <TextBlock Text="{Binding Title}"
                                                        FontSize="13"
-                                                       Foreground="{StaticResource Brush.TextPrimary}"/>
+                                                       Foreground="{StaticResource Brush.TextPrimary}" />
                                             <TextBlock Text="{Binding Category}"
                                                        FontSize="11"
-                                                       Foreground="{StaticResource Brush.TextMuted}"/>
+                                                       Foreground="{StaticResource Brush.TextMuted}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" HorizontalAlignment="Right">
@@ -260,13 +260,16 @@
                                                        FontSize="14">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+                                                        <Setter Property="Foreground"
+                                                                Value="{StaticResource Brush.TextPrimary}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Type}" Value="Expense">
-                                                                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource Brush.Danger}" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Type}" Value="Income">
-                                                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource Brush.Success}" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -275,12 +278,13 @@
                                             <TextBlock Text="{Binding Date}"
                                                        FontSize="12"
                                                        Foreground="{StaticResource Brush.TextMuted}"
-                                                       HorizontalAlignment="Right"/>
+                                                       HorizontalAlignment="Right" />
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
                     </Grid>
                 </Border>
 

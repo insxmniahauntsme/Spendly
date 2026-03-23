@@ -3,30 +3,39 @@ using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Analytics.Dashboard;
 using Spendly.Application.Handlers.Dashboard.Requests;
 using Spendly.Application.Models.Dashboard;
+using Spendly.Data.Entities;
 using Spendly.Data.Enums;
+using Spendly.Domain.Enums;
 using Spendly.Domain.Models;
 using Spendly.Infrastructure;
 
 namespace Spendly.Application.Handlers.Dashboard;
 
-// TODO: Consider about refactoring entire dashboard backend (architecture, db queries, unified dashboard data source)
-public sealed class GetDashboardDataHandler(
-    SpendlyDbContext dbContext)
+public sealed class GetDashboardDataHandler(SpendlyDbContext dbContext)
     : IRequestHandler<GetDashboardDataRequest, DashboardData>
 {
     public async Task<DashboardData> Handle(GetDashboardDataRequest request, CancellationToken ct)
     {
-        var currentStart = new DateOnly(request.Year, request.Month, 1);
-        var currentEnd = currentStart.AddMonths(1);
-        var prevStart = currentStart.AddMonths(-1);
-        var halfYearAgo = currentStart.AddMonths(-5);
-        
-        var fromUtc = DateTime.SpecifyKind(halfYearAgo.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
-        var toUtc = DateTime.SpecifyKind(currentEnd.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+        var selectedMonth = request.Date;
 
-        var transactions = await dbContext.Transactions
+        var chartCurrentMonth = selectedMonth ?? new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
+        var chartCurrentMonthEnd = chartCurrentMonth.AddMonths(1);
+        var chartHalfYearAgo = chartCurrentMonth.AddMonths(-5);
+
+        IQueryable<TransactionEntity> query = dbContext.Transactions
             .AsNoTracking()
-            .Where(t => t.DateUtc >= fromUtc && t.DateUtc < toUtc)
+            .Include(t => t.Category)
+            .Include(t => t.Account);
+
+        if (selectedMonth is not null)
+        {
+            var fromUtc = DateTime.SpecifyKind(chartHalfYearAgo.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+            var toUtc = DateTime.SpecifyKind(chartCurrentMonthEnd.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+
+            query = query.Where(t => t.DateUtc >= fromUtc && t.DateUtc < toUtc);
+        }
+
+        var transactions = await query
             .Select(t => new Transaction
             {
                 Id = t.Id,
@@ -35,28 +44,54 @@ public sealed class GetDashboardDataHandler(
                 Amount = t.Amount,
                 DateUtc = t.DateUtc,
                 Type = t.Type,
-                Comment = t.Comment
+                Comment = t.Comment,
+                Category = t.Category == null
+                    ? null
+                    : new Category { Id = t.Category.Id, Name = t.Category.Name },
+                Account = new Account { Id = t.Account.Id, Name = t.Account.Name, Type = t.Account.Type }
             })
             .ToListAsync(ct);
 
-        var kpi = CalculateKpiData(transactions, currentStart, currentEnd, prevStart);
+        DashboardKpi kpi;
+        IReadOnlyList<Transaction> transactionTableData;
 
-        var barData = CalculateBarChartData(transactions, currentEnd, halfYearAgo);
-        var donutData = await CalculateDonutChartData(request, ct);
+        if (selectedMonth is not null)
+        {
+            var currentMonthStart = selectedMonth.Value;
+            var currentMonthEnd = currentMonthStart.AddMonths(1);
+            var prevMonthStart = currentMonthStart.AddMonths(-1);
 
-        return new DashboardData(kpi.data, kpi.transactions, barData, donutData);
+            var kpiResult = CalculateKpiDataForMonth(transactions, currentMonthStart, currentMonthEnd, prevMonthStart);
+            kpi = kpiResult.data;
+            transactionTableData = kpiResult.transactions;
+        }
+        else
+        {
+            kpi = CalculateKpiDataForAllTime(transactions);
+            transactionTableData = transactions
+                .OrderByDescending(x => x.DateUtc)
+                .ToList();
+        }
+
+        var barData = CalculateBarChartData(transactions, chartCurrentMonthEnd, chartHalfYearAgo);
+        var donutData = CalculateDonutChartData(transactions, selectedMonth);
+
+        return new DashboardData(kpi, transactionTableData, barData, donutData);
     }
 
-    private static (DashboardKpi data, IReadOnlyList<Transaction> transactions) CalculateKpiData(
+    private static (DashboardKpi data, IReadOnlyList<Transaction> transactions) CalculateKpiDataForMonth(
         IReadOnlyList<Transaction> transactions,
         DateOnly currentStart,
         DateOnly currentEnd,
         DateOnly prevStart)
     {
         var prevTx = transactions.Where(t =>
-            DateOnly.FromDateTime(t.DateUtc) >= prevStart && DateOnly.FromDateTime(t.DateUtc) < currentStart).ToList();
+            DateOnly.FromDateTime(t.DateUtc) >= prevStart &&
+            DateOnly.FromDateTime(t.DateUtc) < currentStart).ToList();
+
         var currTx = transactions.Where(t =>
-            DateOnly.FromDateTime(t.DateUtc) >= currentStart && DateOnly.FromDateTime(t.DateUtc) < currentEnd).ToList();
+            DateOnly.FromDateTime(t.DateUtc) >= currentStart &&
+            DateOnly.FromDateTime(t.DateUtc) < currentEnd).ToList();
 
         var (currIncome, currExpense) = SumMonth(currTx);
         var (prevIncome, prevExpense) = SumMonth(prevTx);
@@ -64,8 +99,28 @@ public sealed class GetDashboardDataHandler(
         var incomeChangePct = MonthKpiCalculator.CalculateAmountChangePct(currIncome, prevIncome);
         var expenseChangePct = MonthKpiCalculator.CalculateAmountChangePct(currExpense, prevExpense);
 
-        return new ValueTuple<DashboardKpi, IReadOnlyList<Transaction>>(
-            new DashboardKpi(currIncome, currExpense, incomeChangePct, expenseChangePct), currTx);
+        return (
+            new DashboardKpi(currIncome, currExpense, incomeChangePct, expenseChangePct),
+            currTx
+        );
+    }
+
+    private static DashboardKpi CalculateKpiDataForAllTime(IReadOnlyList<Transaction> transactions)
+    {
+        var income = transactions
+            .Where(x => x.Type == TransactionType.Income)
+            .Sum(x => x.Amount);
+
+        var expense = transactions
+            .Where(x => x.Type == TransactionType.Expense)
+            .Sum(x => x.Amount);
+
+        return new DashboardKpi(
+            MonthlyIncome: income,
+            MonthlyExpense: expense,
+            IncomeChangePct: null,
+            ExpenseChangePct: null
+        );
     }
 
     private static IReadOnlyList<MonthPoint> CalculateBarChartData(
@@ -112,28 +167,27 @@ public sealed class GetDashboardDataHandler(
             .ToList();
     }
 
-    private async Task<IReadOnlyList<CategorySlice>> CalculateDonutChartData(
-        GetDashboardDataRequest request,
-        CancellationToken ct)
+    private static IReadOnlyList<CategorySlice> CalculateDonutChartData(
+        IReadOnlyList<Transaction> transactions,
+        DateOnly? month)
     {
-        var start = new DateTime(request.Year, request.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-        var end = start.AddMonths(1);
+        IEnumerable<Transaction> filtered = transactions
+            .Where(t => t is { Type: TransactionType.Expense, Category: not null });
 
-        var rows = await dbContext.Transactions
-            .AsNoTracking()
-            .Where(t => 
-                t.Type == TransactionType.Expense &&
-                t.DateUtc >= start && t.DateUtc < end &&
-                t.CategoryId != null)
-            .Select(t => new
+        if (month is not null)
+        {
+            var start = month.Value;
+            var end = start.AddMonths(1);
+
+            filtered = filtered.Where(t =>
             {
-                t.Category!.Name,
-                t.Amount
-            })
-            .ToListAsync(ct);
+                var d = DateOnly.FromDateTime(t.DateUtc);
+                return d >= start && d < end;
+            });
+        }
 
-        return rows
-            .GroupBy(x => x.Name)
+        return filtered
+            .GroupBy(t => t.Category!.Name)
             .Select(g => new CategorySlice(
                 CategoryName: g.Key,
                 Amount: g.Sum(x => x.Amount)))

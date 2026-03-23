@@ -1,4 +1,4 @@
-﻿using Riok.Mapperly.Abstractions;
+﻿using Spendly.Application.Models.Transactions;
 using Spendly.Data.Entities;
 using Spendly.Domain.Models;
 
@@ -28,16 +28,43 @@ public static class TransactionsMapper
             DateUtc = entity.DateUtc,
             Type = entity.Type,
             Comment = entity.Comment,
+
             Account = new Account
             {
-                Id = entity.AccountId,
+                Id = entity.Account.Id,
                 Balance = entity.Account.Balance,
                 Name = entity.Account.Name,
-                Type = entity.Account.Type,
-                Transactions = entity.Account.Transactions.Select(ToModel).ToList()
+                Type = entity.Account.Type
             },
+
+            Category = entity.Category is null
+                ? null
+                : new Category
+                {
+                    Id = entity.Category.Id,
+                    Name = entity.Category.Name
+                }
         };
 
-    public static IReadOnlyList<Transaction> ProjectToModels(this IReadOnlyList<TransactionEntity> transactions)
+    public static List<Transaction> ProjectToModels(this IReadOnlyList<TransactionEntity> transactions)
         => transactions.Select(ToModel).ToList();
+
+    public static void UpdateEntity(this TransactionEntity entity, UpdateTransactionModel model)
+    {
+        entity.Amount = model.Amount;
+        entity.DateUtc = model.DateUtc;
+        entity.Comment = model.Comment;
+        entity.Type = model.Type;
+    }
+
+    public static TransactionEntity ToEntity(this CreateTransactionModel model)
+        => new TransactionEntity
+        {
+            AccountId = model.AccountId,
+            CategoryId = model.CategoryId,
+            Amount = model.Amount,
+            DateUtc = model.DateUtc,
+            Type = model.Type,
+            Comment = model.Comment
+        };
 }

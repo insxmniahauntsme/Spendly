@@ -23,6 +23,7 @@
 
                 <!-- Custom styles -->
                 <ResourceDictionary Source="Themes/SpendlyTheme.xaml"/>
+                <ResourceDictionary Source="Themes/ScrollBars.xaml" />
                 <ResourceDictionary Source="Themes/SidebarStyles.xaml"/>
                 <ResourceDictionary Source="Themes/KpiCardStyle.xaml"/>
                 <ResourceDictionary Source="Themes/MonthPickerStyle.xaml"/>

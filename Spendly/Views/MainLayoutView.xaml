@@ -3,48 +3,62 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dashboardViews="clr-namespace:Spendly.Views.Dashboard"
              xmlns:transactionsViews="clr-namespace:Spendly.Views.Transactions"
+             xmlns:analyticsViews="clr-namespace:Spendly.Views.Analytics"
              xmlns:selectors="clr-namespace:Spendly.Selectors"
              xmlns:dashboardVm="clr-namespace:Spendly.ViewModels.Dashboard"
-             xmlns:transactionsVm="clr-namespace:Spendly.ViewModels.Transactions">
+             xmlns:transactionsVm="clr-namespace:Spendly.ViewModels.Transactions"
+             xmlns:analyticsVm="clr-namespace:Spendly.ViewModels.Analytics"
+             xmlns:notifications="clr-namespace:Spendly.Controls.Notifications">
 
     <UserControl.Resources>
 
         <!-- HEADER templates -->
         <DataTemplate x:Key="Header.Dashboard" DataType="{x:Type dashboardVm:DashboardViewModel}">
-            <dashboardViews:DashboardHeaderView/>
+            <dashboardViews:DashboardHeaderView />
         </DataTemplate>
 
         <DataTemplate x:Key="Header.Transactions" DataType="{x:Type transactionsVm:TransactionsViewModel}">
-            <transactionsViews:TransactionsHeaderView/>
+            <transactionsViews:TransactionsHeaderView />
+        </DataTemplate>
+        
+        <DataTemplate x:Key="Header.Analytics" DataType="{x:Type analyticsVm:AnalyticsViewModel}">
+            <analyticsViews:AnalyticsHeaderView />
         </DataTemplate>
 
         <!-- BODY templates -->
         <DataTemplate x:Key="Body.Dashboard" DataType="{x:Type dashboardVm:DashboardViewModel}">
-            <dashboardViews:DashboardView/>
+            <dashboardViews:DashboardView />
         </DataTemplate>
 
         <DataTemplate x:Key="Body.Transactions" DataType="{x:Type transactionsVm:TransactionsViewModel}">
-            <transactionsViews:TransactionsView/>
+            <transactionsViews:TransactionsView />
+        </DataTemplate>
+        
+        <DataTemplate x:Key="Body.Analytics" DataType="{x:Type analyticsVm:AnalyticsViewModel}">
+            <analyticsViews:AnalyticsView />
         </DataTemplate>
 
         <!-- Selectors -->
         <selectors:HeaderTemplateSelector x:Key="HeaderTemplateSelector"
                                           Dashboard="{StaticResource Header.Dashboard}"
-                                          Transactions="{StaticResource Header.Transactions}" />
+                                          Transactions="{StaticResource Header.Transactions}" 
+                                          Analytics="{StaticResource Header.Analytics}"/>
 
         <selectors:BodyTemplateSelector x:Key="BodyTemplateSelector"
                                         Dashboard="{StaticResource Body.Dashboard}"
-                                        Transactions="{StaticResource Body.Transactions}" />
+                                        Transactions="{StaticResource Body.Transactions}" 
+                                        Analytics="{StaticResource Body.Analytics}"/>
 
     </UserControl.Resources>
-    
+
     <Grid Background="{StaticResource Brush.MainBg}">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!-- TODO: Move sidebar to a separate component -->
         <!-- Sidebar -->
         <Border Grid.Column="0"
                 Background="{StaticResource Brush.SidebarBg}"
@@ -54,26 +68,35 @@
             <StackPanel>
 
                 <!-- Logo -->
+                <!-- <controls:SvgIcon Width="350" -->
+                <!--                   Height="100" -->
+                <!--                   HorizontalAlignment="Left" -->
+                <!--                   Source="pack://application:,,,/Resources/Icons/logo.svg" /> -->
                 <TextBlock Text="Spendly"
                            Margin="20"
                            FontSize="24"
                            FontWeight="Bold"
                            Foreground="{StaticResource Brush.Primary}" />
-                
+
                 <!-- Divider -->
                 <Border Style="{StaticResource DividerStyle}" />
 
                 <!-- Navigation Buttons -->
                 <RadioButton Content="Dashboard"
-                             IsChecked="{Binding IsDashboardSelected}"
-                             Style="{StaticResource SidebarButtonStyle}"/>
-
+                             IsChecked="{Binding IsDashboardSelected, Mode=OneWay}"
+                             Command="{Binding NavigateToDashboardCommand}"
+                             Style="{StaticResource SidebarButtonStyle}" />
 
                 <RadioButton Content="Transactions"
-                             IsChecked="{Binding IsTransactionsSelected}"
-                             Style="{StaticResource SidebarButtonStyle}"/>
-
-
+                             IsChecked="{Binding IsTransactionsSelected, Mode=OneWay}"
+                             Command="{Binding NavigateToTransactionsCommand}"
+                             Style="{StaticResource SidebarButtonStyle}" />
+                
+                <RadioButton Content="Analytics"
+                             IsChecked="{Binding IsAnalyticsSelected, Mode=OneWay}"
+                             Command="{Binding NavigateToAnalyticsCommand}"
+                             Style="{StaticResource SidebarButtonStyle}" />
+                
             </StackPanel>
 
         </Border>
@@ -81,24 +104,83 @@
         <!-- Main Content -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="72"/> <!-- Header -->
-                <RowDefinition Height="Auto"/> <!-- Divider -->
-                <RowDefinition Height="*"/> <!-- Main Content -->
+                <RowDefinition Height="72" /> <!-- Header -->
+                <RowDefinition Height="Auto" /> <!-- Divider -->
+                <RowDefinition Height="*" /> <!-- Main Content -->
             </Grid.RowDefinitions>
 
             <!-- Header -->
             <ContentControl Grid.Row="0"
                             Content="{Binding CurrentVm}"
-                            ContentTemplateSelector="{StaticResource HeaderTemplateSelector}"/>
+                            ContentTemplateSelector="{StaticResource HeaderTemplateSelector}" />
 
             <!-- Divider -->
-            <Border Grid.Row="1" Style="{StaticResource DividerStyle}"/>
+            <Border Grid.Row="1" Style="{StaticResource DividerStyle}" />
 
             <!-- Main content -->
             <ContentControl Grid.Row="2"
                             Content="{Binding CurrentVm}"
-                            ContentTemplateSelector="{StaticResource BodyTemplateSelector}"/>
+                            ContentTemplateSelector="{StaticResource BodyTemplateSelector}" />
 
+            <Grid Grid.Row="0"
+                  Grid.RowSpan="3"
+                  Panel.ZIndex="100">
+
+                <notifications:ToastView HorizontalAlignment="Right"
+                                         VerticalAlignment="Top"
+                                         Margin="0,20,20,0"
+                                         IsHitTestVisible="True"
+                                         Title="{Binding CurrentVm.ToastTitle}"
+                                         Message="{Binding CurrentVm.ToastMessage}"
+                                         Variant="{Binding CurrentVm.ToastVariant}"
+                                         Command="{Binding CurrentVm.OpenExportFolderCommand}"
+                                         CloseCommand="{Binding CurrentVm.DismissToastCommand}"
+                                         IsClickable="{Binding CurrentVm.IsToastClickable}"
+                                         IsClosable="True">
+                    <notifications:ToastView.Style>
+                        <Style TargetType="{x:Type notifications:ToastView}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentVm.IsToastVisible}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </notifications:ToastView.Style>
+                </notifications:ToastView>
+
+            </Grid>
         </Grid>
+        <ContentControl Grid.Column="0" Grid.ColumnSpan="2"
+                        Panel.ZIndex="300"
+                        IsHitTestVisible="True">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentVm.EditTransaction.IsOpen}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+
+            <transactionsViews:EditTransactionView DataContext="{Binding CurrentVm.EditTransaction}" />
+        </ContentControl>
+        <ContentControl Grid.Column="0" Grid.ColumnSpan="2"
+                        Panel.ZIndex="301">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentVm.AddTransaction.IsOpen}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+
+            <transactionsViews:AddTransactionView DataContext="{Binding CurrentVm.AddTransaction}" />
+        </ContentControl>
     </Grid>
 </UserControl>

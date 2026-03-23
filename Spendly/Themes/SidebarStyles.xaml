@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- SIDEBAR NAVIGATION -->
+
     <Style x:Key="SidebarButtonStyle" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
         <Setter Property="Height" Value="35"/>

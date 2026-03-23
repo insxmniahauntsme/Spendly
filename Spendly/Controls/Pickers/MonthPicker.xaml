@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Spendly.Controls.MonthPicker.MonthPicker"
+﻿<UserControl x:Class="Spendly.Controls.Pickers.MonthPicker"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Spendly.Controls"
@@ -8,16 +8,16 @@
         <!-- Top button -->
         <ToggleButton x:Name="DropButton"
                       Style="{Binding ElementName=Root, Path=ButtonStyle}"
-                      IsChecked="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}">
+                      IsChecked="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}"
+                      PreviewMouseRightButtonUp="DropButton_OnPreviewMouseRightButtonUp">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <controls:SvgIcon Width="18"
-                                  Height="18"
+                <controls:SvgIcon Width="16"
+                                  Height="16"
                                   Margin="0,0,8,0"
                                   Source="{Binding ElementName=Root, Path=IconSource}" />
 
-                <!-- Month Year -->
                 <TextBlock Style="{StaticResource MonthPickerButtonTextStyle}"
-                           Text="{Binding ElementName=Root, Path=SelectedMonth}" />
+                           Text="{Binding ElementName=Root, Path=SelectedMonthText}" />
             </StackPanel>
         </ToggleButton>
 
@@ -63,7 +63,7 @@
 
                         <TextBlock Grid.Column="1"
                                    Style="{StaticResource MonthPickerHeaderTextStyle}"
-                                   Text="{Binding ElementName=Root, Path=PreviewMonth}" />
+                                   Text="{Binding ElementName=Root, Path=PreviewMonthText}" />
 
                         <Button Grid.Column="2"
                                 Style="{Binding ElementName=Root, Path=NavButtonStyle}"

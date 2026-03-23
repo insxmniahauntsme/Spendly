@@ -9,6 +9,7 @@ using Spendly.Infrastructure.Services;
 using Spendly.Sqlite.Configurations;
 using Spendly.Sqlite.DependencyInjection;
 using Spendly.ViewModels;
+using Spendly.ViewModels.Analytics;
 using Spendly.ViewModels.Transactions;
 using DashboardViewModel = Spendly.ViewModels.Dashboard.DashboardViewModel;
 
@@ -35,6 +36,7 @@ public partial class App
 				services.AddSingleton<MainLayoutViewModel>();
 				services.AddSingleton<DashboardViewModel>();
 				services.AddSingleton<TransactionsViewModel>();
+				services.AddSingleton<AnalyticsViewModel>();
 			})
 			.Build();
 	}

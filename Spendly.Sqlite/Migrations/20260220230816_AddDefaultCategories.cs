@@ -30,6 +30,7 @@ namespace Spendly.Sqlite.Migrations
 					{ Guid.Parse("e48da97d-3a58-4d21-9312-23ad6c5c168a"), "Insurance" },
 					{ Guid.Parse("60e00e2c-fbe0-4537-a336-0aac8bf60c4f"), "Taxes" },
 					{ Guid.Parse("b76ce3d2-1d2b-49df-9c01-8d298a3a759e"), "Investments" },
+					{ Guid.Parse("3ef8bcc0-828a-4530-a666-d78d2126339f"), "Salary" },
 					{ Guid.Parse("ef7f9de1-78bf-46cb-ba9c-04be4301367f"), "Other" }
 				});
 		}
@@ -55,6 +56,7 @@ namespace Spendly.Sqlite.Migrations
 			                           'e48da97d-3a58-4d21-9312-23ad6c5c168a',
 			                           '60e00e2c-fbe0-4537-a336-0aac8bf60c4f',
 			                           'b76ce3d2-1d2b-49df-9c01-8d298a3a759e',
+			                           '3ef8bcc0-828a-4530-a666-d78d2126339f',
 			                           'ef7f9de1-78bf-46cb-ba9c-04be4301367f'
 			                         );
 			                     """);
