@@ -16,7 +16,7 @@
         <!-- Top chip -->
         <ToggleButton x:Name="DropButton"
                       Style="{StaticResource TxnFilterChipToggleStyle}"
-                      Width="106"
+                      Width="130"
                       IsChecked="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}"
                       PreviewMouseRightButtonUp="DropButton_OnPreviewMouseRightButtonUp">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -124,11 +124,16 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- optional icon from VM -->
-                                    <controls:SvgIcon Grid.Column="0"
-                                                      Width="16" Height="16"
-                                                      VerticalAlignment="Center"
-                                                      Source="{Binding IconSource}"/>
+                                    <Border Width="28"
+                                            Height="28"
+                                            CornerRadius="8"
+                                            Background="{Binding IconBackground}">
+                                        <TextBlock Text="{Binding IconText}"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="13" />
+                                    </Border>
 
                                     <TextBlock Grid.Column="1"
                                                Text="{Binding Name}"

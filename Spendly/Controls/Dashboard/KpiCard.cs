@@ -31,6 +31,13 @@ public class KpiCard : Control
     public static readonly DependencyProperty VariantProperty =
         DependencyProperty.Register(nameof(Variant), typeof(KpiVariant), typeof(KpiCard),
             new PropertyMetadata(KpiVariant.Primary));
+    
+    public static readonly DependencyProperty BadgeVariantProperty =
+        DependencyProperty.Register(
+            nameof(BadgeVariant),
+            typeof(KpiBadgeVariant),
+            typeof(KpiCard),
+            new PropertyMetadata(KpiBadgeVariant.Neutral));
 
     /// <summary>
     /// True = data is absent - shows "—" and neutral style.
@@ -68,6 +75,12 @@ public class KpiCard : Control
     {
         get => (KpiVariant)GetValue(VariantProperty);
         set => SetValue(VariantProperty, value);
+    }
+    
+    public KpiBadgeVariant BadgeVariant
+    {
+        get => (KpiBadgeVariant)GetValue(BadgeVariantProperty);
+        set => SetValue(BadgeVariantProperty, value);
     }
 
     public bool IsEmpty

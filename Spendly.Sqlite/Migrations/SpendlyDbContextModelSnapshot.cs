@@ -65,6 +65,29 @@ namespace Spendly.Sqlite.Migrations
                     b.ToTable("categories");
                 });
 
+            modelBuilder.Entity("Spendly.Data.Entities.CategoryLimitEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("category_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("category_limits");
+                });
+
             modelBuilder.Entity("Spendly.Data.Entities.TransactionEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -108,6 +131,17 @@ namespace Spendly.Sqlite.Migrations
                     b.ToTable("transactions");
                 });
 
+            modelBuilder.Entity("Spendly.Data.Entities.CategoryLimitEntity", b =>
+                {
+                    b.HasOne("Spendly.Data.Entities.CategoryEntity", "Category")
+                        .WithOne("Limit")
+                        .HasForeignKey("Spendly.Data.Entities.CategoryLimitEntity", "CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Spendly.Data.Entities.TransactionEntity", b =>
                 {
                     b.HasOne("Spendly.Data.Entities.AccountEntity", "Account")
@@ -129,6 +163,11 @@ namespace Spendly.Sqlite.Migrations
             modelBuilder.Entity("Spendly.Data.Entities.AccountEntity", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Spendly.Data.Entities.CategoryEntity", b =>
+                {
+                    b.Navigation("Limit");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,26 +6,21 @@
 
     <Grid Margin="20,20,16,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Dashboard"
                    FontSize="24"
                    FontWeight="Bold"
                    Foreground="White"
-                   VerticalAlignment="Center"/>
+                   VerticalAlignment="Center" />
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal">
 
-            <pickers:MonthPicker
-                SelectedMonth="{Binding SelectedMonth, Mode=TwoWay}"
-                ButtonStyle="{StaticResource OutlineToggleButtonStyle}"
-                NavButtonStyle="{StaticResource MonthPickerNavButtonStyle}" />
-
-            <Button Style="{StaticResource GradientButtonStyle}"
-                    Content="Add Transaction"
-                    Margin="12,0,0,0"/>
-        </StackPanel>
+        <pickers:MonthPicker
+            Grid.Column="1"
+            SelectedMonth="{Binding SelectedMonth, Mode=TwoWay}"
+            ButtonStyle="{StaticResource OutlineToggleButtonStyle}"
+            NavButtonStyle="{StaticResource MonthPickerNavButtonStyle}" />
     </Grid>
 </UserControl>

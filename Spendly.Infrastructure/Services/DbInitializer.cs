@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Spendly.Data.Entities;
-using Spendly.Data.Enums;
+using Spendly.Domain.Enums;
 using Spendly.Infrastructure.Interfaces;
 
 namespace Spendly.Infrastructure.Services;

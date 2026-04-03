@@ -5,8 +5,7 @@
              xmlns:dashboard="clr-namespace:Spendly.Controls.Dashboard"
              xmlns:converters="clr-namespace:Spendly.Converters"
              xmlns:local="clr-namespace:Spendly.ViewModels.Transactions"
-             xmlns:pickers="clr-namespace:Spendly.Controls.Pickers"
-             xmlns:dataEnums="clr-namespace:Spendly.Data.Enums;assembly=Spendly.Domain">
+             xmlns:pickers="clr-namespace:Spendly.Controls.Pickers">
 
     <UserControl.Resources>
         <converters:EnumEqualsConverter x:Key="EnumEqualsConverter" />

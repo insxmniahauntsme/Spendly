@@ -7,10 +7,10 @@
              xmlns:controls="clr-namespace:Spendly.Controls"
              xmlns:converters="clr-namespace:Spendly.Converters"
              mc:Ignorable="d">
-    
+
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
     </UserControl.Resources>
 
     <Border x:Name="RootBorder"
@@ -25,6 +25,7 @@
                 <Binding ElementName="RootBorder" Path="CornerRadius" />
             </MultiBinding>
         </Border.Clip>
+
         <Grid ClipToBounds="True">
 
             <!-- Glow -->
@@ -91,12 +92,16 @@
                     </Border>
 
                     <!-- Icon + title -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <StackPanel Grid.Row="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
                         <controls:SvgIcon Width="18"
                                           Height="18"
+                                          VerticalAlignment="Center"
                                           Source="{Binding IconSource, ElementName=Root}" />
 
                         <TextBlock Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
                                    Text="{Binding Title, ElementName=Root}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
@@ -119,7 +124,8 @@
                           Grid.Row="6"
                           Height="6"
                           SizeChanged="ProgressHost_OnSizeChanged">
-                        <Border Background="#171722" CornerRadius="3" />
+                        <Border Background="#171722"
+                                CornerRadius="3" />
 
                         <Border x:Name="ProgressFill"
                                 HorizontalAlignment="Left"
@@ -129,26 +135,35 @@
                 </Grid>
 
                 <!-- EMPTY CONTENT -->
+                <!-- EMPTY CONTENT -->
                 <Grid x:Name="EmptyGrid"
                       Visibility="{Binding HasData, ElementName=Root, Converter={StaticResource InverseBoolToVisibility}}">
-                    <StackPanel VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="18" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                        <Border HorizontalAlignment="Left"
-                                CornerRadius="6"
-                                Padding="10,5"
-                                Background="{StaticResource Brush.NeutralOverlay}">
-                            <TextBlock Text="{Binding BadgeText, ElementName=Root}"
-                                       FontSize="10"
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush.TextMuted}" />
-                        </Border>
+                    <Border Grid.Row="0"
+                            HorizontalAlignment="Left"
+                            CornerRadius="6"
+                            Padding="10,5"
+                            Background="{Binding EmptyBadgeBackground, ElementName=Root}">
+                        <TextBlock Text="{Binding EmptyBadgeTextInternal, ElementName=Root}"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Foreground="{Binding EmptyBadgeForeground, ElementName=Root}" />
+                    </Border>
 
-                        <TextBlock Margin="0,16,0,0"
-                                   Text="{Binding Title, ElementName=Root}"
-                                   FontSize="13"
-                                   Foreground="{StaticResource Brush.TextPrimary}" />
-
-                    </StackPanel>
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding EmptyTitleInternal, ElementName=Root}"
+                               FontSize="17"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextPrimary}"
+                               TextWrapping="Wrap"
+                               MaxWidth="185"
+                               LineHeight="22" />
                 </Grid>
             </Grid>
         </Grid>

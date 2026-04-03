@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Spendly.ViewModels.Analytics;
+using Spendly.ViewModels.Budgets;
 using Spendly.ViewModels.Dashboard;
 using Spendly.ViewModels.Transactions;
 
@@ -11,6 +12,7 @@ public partial class MainLayoutViewModel : ObservableObject
 	public DashboardViewModel DashboardVm { get; }
 	public TransactionsViewModel TransactionsVm { get; }
 	public AnalyticsViewModel AnalyticsVm { get; }
+	public BudgetsViewModel BudgetsVm { get; }
 
 	[ObservableProperty]
 	private ObservableObject _currentVm = null!;
@@ -23,15 +25,20 @@ public partial class MainLayoutViewModel : ObservableObject
 	
 	[ObservableProperty]
 	private bool _isAnalyticsSelected;
+	
+	[ObservableProperty]
+	private bool _isBudgetsSelected;
 
 	public MainLayoutViewModel(
 		DashboardViewModel dashboardVm,
 		TransactionsViewModel transactionsVm,
-		AnalyticsViewModel analyticsVm)
+		AnalyticsViewModel analyticsVm,
+		BudgetsViewModel budgetsVm)
 	{
 		DashboardVm = dashboardVm;
 		TransactionsVm = transactionsVm;
 		AnalyticsVm = analyticsVm;
+		BudgetsVm = budgetsVm;
 
 		NavigateToDashboard();
 	}
@@ -43,6 +50,8 @@ public partial class MainLayoutViewModel : ObservableObject
 		IsDashboardSelected = true;
 		IsTransactionsSelected = false;
 		IsAnalyticsSelected = false;
+		IsBudgetsSelected = false;
+
 	}
 
 	[RelayCommand]
@@ -52,6 +61,8 @@ public partial class MainLayoutViewModel : ObservableObject
 		IsDashboardSelected = false;
 		IsTransactionsSelected = true;
 		IsAnalyticsSelected = false;
+		IsBudgetsSelected = false;
+
 	}
 
 	[RelayCommand]
@@ -61,5 +72,17 @@ public partial class MainLayoutViewModel : ObservableObject
 		IsDashboardSelected = false;
 		IsTransactionsSelected = false;
 		IsAnalyticsSelected = true;
+		IsBudgetsSelected = false;
+
+	}
+	
+	[RelayCommand]
+	private void NavigateToBudgets()
+	{
+		CurrentVm = BudgetsVm;
+		IsDashboardSelected = false;
+		IsTransactionsSelected = false;
+		IsAnalyticsSelected = false;
+		IsBudgetsSelected = true;
 	}
 }

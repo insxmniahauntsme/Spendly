@@ -10,7 +10,7 @@ using MediatR;
 using SkiaSharp;
 using Spendly.Application.Handlers.Dashboard.Requests;
 using Spendly.Application.Models.Dashboard;
-using Spendly.Data.Enums;
+using Spendly.Controls.Dashboard;
 using Spendly.Domain.Enums;
 using Spendly.Helpers;
 using Transaction = Spendly.Domain.Models.Transaction;
@@ -32,6 +32,8 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string _balanceText = "—";
     [ObservableProperty] private string _balanceSubText = "";
     [ObservableProperty] private string _transactionsCountText = "—";
+    [ObservableProperty] private KpiBadgeVariant _incomeMonthBadgeVariant;
+    [ObservableProperty] private KpiBadgeVariant _expenseMonthBadgeVariant;
     
     
     // CHARTS
@@ -94,6 +96,9 @@ public partial class DashboardViewModel : ObservableObject
 
         IncomeMonthBadgeText = FormatBadge(data.Kpi.IncomeChangePct);
         ExpenseMonthBadgeText = FormatBadge(data.Kpi.ExpenseChangePct);
+        
+        IncomeMonthBadgeVariant = GetBadgeVariant(data.Kpi.IncomeChangePct, increaseIsGood: true);
+        ExpenseMonthBadgeVariant = GetBadgeVariant(data.Kpi.ExpenseChangePct, increaseIsGood: false);
 
         BalanceSubText = data.Kpi.BalancePctOfIncome is null
             ? ""
@@ -242,6 +247,17 @@ public partial class DashboardViewModel : ObservableObject
         if (pct is null) return "";
         var sign = pct >= 0 ? "▲" : "▼";
         return $"{sign} {Math.Abs(pct.Value):0.0%}";
+    }
+
+    private static KpiBadgeVariant GetBadgeVariant(double? pct, bool increaseIsGood)
+    {
+        if (pct is null or 0)
+            return KpiBadgeVariant.Neutral;
+
+        if (increaseIsGood)
+            return pct > 0 ? KpiBadgeVariant.Success : KpiBadgeVariant.Danger;
+
+        return pct < 0 ? KpiBadgeVariant.Success : KpiBadgeVariant.Danger;
     }
     
     private static string FormatAmount(Transaction t)

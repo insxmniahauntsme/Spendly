@@ -10,6 +10,7 @@ public class SpendlyDbContext(DbContextOptions<SpendlyDbContext> options, IProvi
 	public DbSet<AccountEntity> Accounts => Set<AccountEntity>();
 	public DbSet<TransactionEntity> Transactions => Set<TransactionEntity>();
 	public DbSet<CategoryEntity> Categories => Set<CategoryEntity>();
+	public DbSet<CategoryLimitEntity> CategoryLimits => Set<CategoryLimitEntity>();
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
