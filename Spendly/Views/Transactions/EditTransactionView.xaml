@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Spendly.Controls"
              xmlns:converters="clr-namespace:Spendly.Converters"
-             xmlns:enums="clr-namespace:Spendly.Data.Enums;assembly=Spendly.Domain"
              xmlns:enums1="clr-namespace:Spendly.Domain.Enums;assembly=Spendly.Domain"
              x:Name="Root">
 

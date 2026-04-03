@@ -13,4 +13,6 @@ public class CategoryEntity
 	
 	[Column("name")]
 	public required string Name { get; set; }
+
+	public CategoryLimitEntity? Limit { get; set; }
 }

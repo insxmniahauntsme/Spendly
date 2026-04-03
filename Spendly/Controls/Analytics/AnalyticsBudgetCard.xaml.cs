@@ -1,11 +1,11 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Spendly.Controls.Dashboard;
+using Spendly.ViewModels.Analytics;
 
 namespace Spendly.Controls.Analytics;
 
-public partial class AnalyticsBudgetCard : UserControl
+public partial class AnalyticsBudgetCard
 {
     public AnalyticsBudgetCard()
     {
@@ -68,13 +68,20 @@ public partial class AnalyticsBudgetCard : UserControl
             typeof(Brush),
             typeof(AnalyticsBudgetCard),
             new PropertyMetadata(Brushes.Transparent));
-    
+
     public static readonly DependencyProperty HasDataProperty =
         DependencyProperty.Register(
             nameof(HasData),
             typeof(bool),
             typeof(AnalyticsBudgetCard),
-            new PropertyMetadata(true));
+            new PropertyMetadata(true, OnVisualPropertyChanged));
+    
+    public static readonly DependencyProperty KindProperty =
+        DependencyProperty.Register(
+            nameof(Kind),
+            typeof(AnalyticsBudgetCardKind),
+            typeof(AnalyticsBudgetCard),
+            new PropertyMetadata(AnalyticsBudgetCardKind.Overspent, OnVisualPropertyChanged));
 
     public bool HasData
     {
@@ -129,6 +136,17 @@ public partial class AnalyticsBudgetCard : UserControl
         get => (Brush)GetValue(AccentBrushProperty);
         private set => SetValue(AccentBrushProperty, value);
     }
+    
+    public AnalyticsBudgetCardKind Kind
+    {
+        get => (AnalyticsBudgetCardKind)GetValue(KindProperty);
+        set => SetValue(KindProperty, value);
+    }
+
+    public string EmptyBadgeTextInternal => GetEmptyState().badge;
+    public string EmptyTitleInternal => GetEmptyState().title;
+    public Brush EmptyBadgeBackground => GetEmptyBadgeBackground();
+    public Brush EmptyBadgeForeground => GetEmptyBadgeForeground();
 
     private static void OnProgressValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -165,7 +183,9 @@ public partial class AnalyticsBudgetCard : UserControl
             ? Visibility.Collapsed
             : Visibility.Visible;
 
-        switch (Variant)
+        var effectiveVariant = GetEffectiveVariant();
+
+        switch (effectiveVariant)
         {
             case KpiVariant.Success:
                 AccentBrush = TryFindBrush("Brush.Success");
@@ -204,6 +224,53 @@ public partial class AnalyticsBudgetCard : UserControl
         }
 
         UpdateProgress();
+    }
+
+    private KpiVariant GetEffectiveVariant()
+    {
+        if (HasData)
+            return Variant;
+
+        return Kind switch
+        {
+            AnalyticsBudgetCardKind.Overspent => KpiVariant.Primary,
+            AnalyticsBudgetCardKind.Underused => KpiVariant.Success,
+            _ => KpiVariant.Neutral
+        };
+    }
+
+    private (string badge, string title) GetEmptyState()
+    {
+        return Kind switch
+        {
+            AnalyticsBudgetCardKind.Overspent => ("NO OVERSPEND", "No overspending this month"),
+            AnalyticsBudgetCardKind.Underused => ("NO INSIGHTS", "No underused categories"),
+            _ => ("NO DATA", "Nothing to display")
+        };
+    }
+
+    private Brush GetEmptyBadgeBackground()
+    {
+        return GetEffectiveVariant() switch
+        {
+            KpiVariant.Success => TryFindBrush("Brush.SuccessOverlay"),
+            KpiVariant.Warning => TryFindBrush("Brush.WarningOverlay"),
+            KpiVariant.Danger => TryFindBrush("Brush.DangerOverlay"),
+            KpiVariant.Primary => TryFindBrush("Brush.PrimaryOverlay"),
+            _ => TryFindBrush("Brush.NeutralOverlay")
+        };
+    }
+
+    private Brush GetEmptyBadgeForeground()
+    {
+        return GetEffectiveVariant() switch
+        {
+            KpiVariant.Success => TryFindBrush("Brush.Success"),
+            KpiVariant.Warning => TryFindBrush("Brush.Warning"),
+            KpiVariant.Danger => TryFindBrush("Brush.Danger"),
+            KpiVariant.Primary => TryFindBrush("Brush.Primary"),
+            _ => TryFindBrush("Brush.TextMuted")
+        };
     }
 
     private Brush TryFindBrush(string resourceKey)

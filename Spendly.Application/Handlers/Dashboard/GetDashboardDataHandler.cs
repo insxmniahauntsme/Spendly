@@ -4,7 +4,6 @@ using Spendly.Application.Analytics.Dashboard;
 using Spendly.Application.Handlers.Dashboard.Requests;
 using Spendly.Application.Models.Dashboard;
 using Spendly.Data.Entities;
-using Spendly.Data.Enums;
 using Spendly.Domain.Enums;
 using Spendly.Domain.Models;
 using Spendly.Infrastructure;

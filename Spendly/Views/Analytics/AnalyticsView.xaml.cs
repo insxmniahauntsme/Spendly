@@ -1,14 +1,31 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Spendly.Helpers;
+using Spendly.ViewModels.Analytics;
 
 namespace Spendly.Views.Analytics;
 
-public partial class AnalyticsView : UserControl
+public partial class AnalyticsView
 {
+    private bool _isInitialized;
+    
     public AnalyticsView()
     {
         InitializeComponent();
+        Loaded += AnalyticsView_Loaded;
+    }
+    
+    private async void AnalyticsView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (_isInitialized)
+            return;
+
+        if (DataContext is not AnalyticsViewModel vm)
+            return;
+
+        _isInitialized = true;
+        await vm.LoadData();
     }
     
     private void CategoryChipsScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

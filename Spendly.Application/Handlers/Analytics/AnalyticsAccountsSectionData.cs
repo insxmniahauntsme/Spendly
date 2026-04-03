@@ -1,3 +1,3 @@
 ﻿namespace Spendly.Application.Handlers.Analytics;
 
-public record AnalyticsAccountsSectionData();
+public record AnalyticsAccountsSectionData(List<AnalyticsAccountItem> Items);

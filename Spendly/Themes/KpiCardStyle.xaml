@@ -7,15 +7,15 @@
     <!-- =========================================================
          HELPERS
          ========================================================= -->
-    <conv:ClipRectConverter x:Key="ClipRectConverter"/>
-    <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    <conv:ClipRectConverter x:Key="ClipRectConverter" />
+    <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 
     <!-- =========================================================
          KPI CARD STYLE
          ========================================================= -->
     <Style TargetType="{x:Type dashboard:KpiCard}">
-        <Setter Property="FontFamily" Value="Sora"/>
-        <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+        <Setter Property="FontFamily" Value="Sora" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Primary}" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -27,9 +27,9 @@
                             BorderThickness="1">
                         <Border.Clip>
                             <MultiBinding Converter="{StaticResource ClipRectConverter}">
-                                <Binding ElementName="RootBorder" Path="ActualWidth"/>
-                                <Binding ElementName="RootBorder" Path="ActualHeight"/>
-                                <Binding ElementName="RootBorder" Path="CornerRadius"/>
+                                <Binding ElementName="RootBorder" Path="ActualWidth" />
+                                <Binding ElementName="RootBorder" Path="ActualHeight" />
+                                <Binding ElementName="RootBorder" Path="CornerRadius" />
                             </MultiBinding>
                         </Border.Clip>
 
@@ -47,61 +47,117 @@
                                                          GradientOrigin="0.5,0.5"
                                                          RadiusX="0.5"
                                                          RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.Primary.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.Primary.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Ellipse.Fill>
                                 <Ellipse.Effect>
-                                    <BlurEffect Radius="20"/>
+                                    <BlurEffect Radius="20" />
                                 </Ellipse.Effect>
                             </Ellipse>
 
                             <Rectangle Opacity="0.22" IsHitTestVisible="False">
                                 <Rectangle.Fill>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="#22FFFFFF" Offset="0.0"/>
-                                        <GradientStop Color="Transparent" Offset="0.65"/>
+                                        <GradientStop Color="#22FFFFFF" Offset="0.0" />
+                                        <GradientStop Color="Transparent" Offset="0.65" />
                                     </LinearGradientBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
 
                             <Grid Margin="16">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="10"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="10"/>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <TextBlock FontSize="11"
                                            Foreground="{StaticResource Brush.TextMuted}"
-                                           Text="{TemplateBinding Title}"/>
+                                           Text="{TemplateBinding Title}" />
 
                                 <TextBlock x:Name="ValueTextBlock"
                                            Grid.Row="2"
                                            FontSize="22"
                                            FontWeight="SemiBold"
                                            Foreground="{TemplateBinding Foreground}"
-                                           Text="{TemplateBinding ValueText}"/>
+                                           Text="{TemplateBinding ValueText}" />
 
                                 <DockPanel Grid.Row="4">
                                     <Border x:Name="Badge"
                                             DockPanel.Dock="Left"
                                             CornerRadius="4"
                                             Padding="8,4"
-                                            Background="{StaticResource Brush.PrimaryOverlay}"
                                             Visibility="{Binding BadgeText, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToVisibilityConverter}}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background"
+                                                        Value="{StaticResource Brush.NeutralOverlay}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                        Value="{x:Static dashboard:KpiBadgeVariant.Success}">
+                                                        <Setter Property="Background"
+                                                                Value="{StaticResource Brush.SuccessOverlay}" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                                        Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                        Value="{x:Static dashboard:KpiBadgeVariant.Danger}">
+                                                        <Setter Property="Background"
+                                                                Value="{StaticResource Brush.DangerOverlay}" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                                        Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                        Value="{x:Static dashboard:KpiBadgeVariant.Neutral}">
+                                                        <Setter Property="Background"
+                                                                Value="{StaticResource Brush.NeutralOverlay}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
                                         <TextBlock FontSize="11"
-                                                   Foreground="{TemplateBinding Foreground}"
-                                                   Text="{TemplateBinding BadgeText}"/>
+                                                   Text="{TemplateBinding BadgeText}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource Brush.TextMuted}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                            Value="{x:Static dashboard:KpiBadgeVariant.Success}">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{StaticResource Brush.Success}" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger
+                                                            Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                            Value="{x:Static dashboard:KpiBadgeVariant.Danger}">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{StaticResource Brush.Danger}" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger
+                                                            Binding="{Binding BadgeVariant, RelativeSource={RelativeSource TemplatedParent}}"
+                                                            Value="{x:Static dashboard:KpiBadgeVariant.Neutral}">
+                                                            <Setter Property="Foreground"
+                                                                    Value="{StaticResource Brush.TextMuted}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </Border>
 
                                     <TextBlock DockPanel.Dock="Right"
                                                FontSize="11"
                                                Foreground="{StaticResource Brush.TextMuted}"
-                                               Text="{TemplateBinding SubText}"/>
+                                               Text="{TemplateBinding SubText}" />
                                 </DockPanel>
                             </Grid>
                         </Grid>
@@ -110,91 +166,91 @@
                     <ControlTemplate.Triggers>
 
                         <Trigger Property="Variant" Value="Primary">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.PrimaryOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.60"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.60" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.Primary.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.Primary.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
 
                         <Trigger Property="Variant" Value="Success">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Success}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.SuccessOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.60"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.60" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.Success.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.Success.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Success.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Success.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
 
                         <Trigger Property="Variant" Value="Danger">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.DangerOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.60"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.60" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.Danger.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.Danger.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Danger.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Danger.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
 
                         <Trigger Property="Variant" Value="Warning">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Warning}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.WarningOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.45"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.45" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.Warning.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.Warning.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Warning.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Warning.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
 
                         <Trigger Property="Variant" Value="Neutral">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.NeutralOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.35"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.35" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
 
                         <Trigger Property="IsEmpty" Value="True">
-                            <Setter TargetName="ValueTextBlock" Property="Text" Value="—"/>
-                            <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}"/>
-                            <Setter TargetName="Badge" Property="Background" Value="{StaticResource Brush.NeutralOverlay}"/>
-                            <Setter TargetName="Glow" Property="Opacity" Value="0.35"/>
+                            <Setter TargetName="ValueTextBlock" Property="Text" Value="—" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.35" />
                             <Setter TargetName="Glow" Property="Fill">
                                 <Setter.Value>
-                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
-                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A60}" Offset="0.0"/>
-                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A10}" Offset="0.45"/>
-                                        <GradientStop Color="Transparent" Offset="1.0"/>
+                                    <RadialGradientBrush Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.TextMuted.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
                                     </RadialGradientBrush>
                                 </Setter.Value>
                             </Setter>

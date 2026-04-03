@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Handlers.Transactions.Requests;
 using Spendly.Application.Mappers;
 using Spendly.Application.Models;
-using Spendly.Data.Enums;
 using Spendly.Domain.Enums;
 using Spendly.Domain.Models;
 using Spendly.Infrastructure;

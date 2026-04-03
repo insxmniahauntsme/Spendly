@@ -1,0 +1,481 @@
+<UserControl x:Class="Spendly.Views.Budgets.BudgetsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Spendly.Controls"
+             xmlns:viewModels="clr-namespace:Spendly.ViewModels.Budgets"
+             xmlns:converters="clr-namespace:Spendly.Converters"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="LimitDeleteButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0.45" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background"
+                                        Value="{StaticResource Brush.DangerOverlay}" />
+                                <Setter Property="Opacity" Value="1" />
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Background"
+                                        Value="{StaticResource Brush.Danger.A10}" />
+                                <Setter Property="Opacity" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <converters:ProgressToBrushConverter x:Key="ProgressToBrushConverter"
+                                             SuccessBrush="{StaticResource Brush.Success}"
+                                             WarningBrush="{StaticResource Brush.Warning}"
+                                             DangerBrush="{StaticResource Brush.Danger}" />
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource Brush.MainBg}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20,20,20,16">
+
+                <!-- TOP SUMMARY -->
+                <UniformGrid Columns="3" Margin="0,0,0,16">
+                    <Border x:Name="TotalBudgetCard"
+                            Margin="0,0,12,0"
+                            CornerRadius="12"
+                            Background="{StaticResource Brush.CardBg}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1">
+                        <Border.Clip>
+                            <MultiBinding Converter="{StaticResource ClipRectConverter}">
+                                <Binding ElementName="TotalBudgetCard" Path="ActualWidth" />
+                                <Binding ElementName="TotalBudgetCard" Path="ActualHeight" />
+                                <Binding ElementName="TotalBudgetCard" Path="CornerRadius" />
+                            </MultiBinding>
+                        </Border.Clip>
+                        <Grid ClipToBounds="True">
+                            <Ellipse Width="260"
+                                     Height="220"
+                                     Margin="0,-135,-135,0"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     Opacity="0.55"
+                                     IsHitTestVisible="False">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush Center="0.5,0.5"
+                                                         GradientOrigin="0.5,0.5"
+                                                         RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Primary.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <BlurEffect Radius="20" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <Rectangle Opacity="0.20" IsHitTestVisible="False">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#22FFFFFF" Offset="0.0" />
+                                        <GradientStop Color="Transparent" Offset="0.7" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <StackPanel Margin="16">
+                                <TextBlock Text="TOTAL BUDGET"
+                                           FontSize="11"
+                                           Foreground="{StaticResource Brush.TextMuted}" />
+                                <TextBlock Margin="0,8,0,0"
+                                           Text="{Binding TotalBudgetText}"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.Primary}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="SpentCard"
+                            Margin="0,0,12,0"
+                            CornerRadius="12"
+                            Background="{StaticResource Brush.CardBg}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1">
+                        <Border.Clip>
+                            <MultiBinding Converter="{StaticResource ClipRectConverter}">
+                                <Binding ElementName="SpentCard" Path="ActualWidth" />
+                                <Binding ElementName="SpentCard" Path="ActualHeight" />
+                                <Binding ElementName="SpentCard" Path="CornerRadius" />
+                            </MultiBinding>
+                        </Border.Clip>
+                        <Grid ClipToBounds="True">
+                            <Ellipse Width="260"
+                                     Height="220"
+                                     Margin="0,-135,-135,0"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     Opacity="0.55"
+                                     IsHitTestVisible="False">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush Center="0.5,0.5"
+                                                         GradientOrigin="0.5,0.5"
+                                                         RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Danger.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Danger.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <BlurEffect Radius="20" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <Rectangle Opacity="0.20" IsHitTestVisible="False">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#22FFFFFF" Offset="0.0" />
+                                        <GradientStop Color="Transparent" Offset="0.7" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <StackPanel Margin="16">
+                                <TextBlock Text="SPENT"
+                                           FontSize="11"
+                                           Foreground="{StaticResource Brush.TextMuted}" />
+                                <TextBlock Margin="0,8,0,0"
+                                           Text="{Binding SpentText}"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.Danger}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="RemainingCard"
+                            CornerRadius="12"
+                            Background="{StaticResource Brush.CardBg}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1">
+                        <Border.Clip>
+                            <MultiBinding Converter="{StaticResource ClipRectConverter}">
+                                <Binding ElementName="RemainingCard" Path="ActualWidth" />
+                                <Binding ElementName="RemainingCard" Path="ActualHeight" />
+                                <Binding ElementName="RemainingCard" Path="CornerRadius" />
+                            </MultiBinding>
+                        </Border.Clip>
+                        <Grid ClipToBounds="True">
+                            <Ellipse Width="260"
+                                     Height="220"
+                                     Margin="0,-135,-135,0"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     Opacity="0.55"
+                                     IsHitTestVisible="False">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush Center="0.5,0.5"
+                                                         GradientOrigin="0.5,0.5"
+                                                         RadiusX="0.5"
+                                                         RadiusY="0.5">
+                                        <GradientStop Color="{StaticResource Spendly.Success.A60}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Spendly.Success.A10}" Offset="0.45" />
+                                        <GradientStop Color="Transparent" Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                                <Ellipse.Effect>
+                                    <BlurEffect Radius="20" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <Rectangle Opacity="0.20" IsHitTestVisible="False">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#22FFFFFF" Offset="0.0" />
+                                        <GradientStop Color="Transparent" Offset="0.7" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <StackPanel Margin="16">
+                                <TextBlock Text="REMAINING"
+                                           FontSize="11"
+                                           Foreground="{StaticResource Brush.TextMuted}" />
+                                <TextBlock Margin="0,8,0,0"
+                                           Text="{Binding RemainingText}"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.Success}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </UniformGrid>
+
+                <!-- OVERALL PROGRESS -->
+                <Border CornerRadius="12"
+                        Background="{StaticResource Brush.CardBg}"
+                        BorderBrush="{StaticResource Brush.Primary.A60}"
+                        BorderThickness="1"
+                        Padding="16"
+                        Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="16" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Overall budget progress"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.TextPrimary}" />
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding OverallStatusText}"
+                                       FontSize="12"
+                                       Foreground="{Binding OverallProgress, Converter={StaticResource ProgressToBrushConverter}}" />
+                        </Grid>
+
+                        <!-- progress -->
+                        <Grid Grid.Row="2"
+                              Height="10">
+                            <!-- track -->
+                            <Border Background="#37375A"
+                                    CornerRadius="5" />
+
+                            <!-- fill -->
+                            <Border
+                                Background="{Binding OverallProgress, Converter={StaticResource ProgressToBrushConverter}}"
+                                CornerRadius="5"
+                                RenderTransformOrigin="0,0.5">
+                                <Border.RenderTransform>
+                                    <ScaleTransform ScaleX="{Binding OverallProgress}" />
+                                </Border.RenderTransform>
+                            </Border>
+                        </Grid>
+
+                        <!-- captions -->
+                        <Grid Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="₴ 0"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}"
+                                       HorizontalAlignment="Left" />
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding OverallSpentCaption}"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}"
+                                       HorizontalAlignment="Center" />
+
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding OverallBudgetCaption}"
+                                       FontSize="11"
+                                       Foreground="{StaticResource Brush.TextMuted}"
+                                       HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- CATEGORY LIMITS -->
+                <ItemsControl ItemsSource="{Binding LimitRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="12"
+                                    Background="{StaticResource Brush.CardBg}"
+                                    BorderBrush="{StaticResource Brush.Border}"
+                                    BorderThickness="1"
+                                    Padding="16"
+                                    Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="8" />
+                                        <RowDefinition Height="10" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- header -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="34"
+                                                    Height="34"
+                                                    CornerRadius="10"
+                                                    Background="{Binding IconBackground}">
+                                                <controls:SvgIcon Width="18"
+                                                                  Height="18"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Source="{Binding IconSource}" />
+                                            </Border>
+
+                                            <TextBlock Margin="12,0,0,0"
+                                                       VerticalAlignment="Center"
+                                                       Text="{Binding CategoryName}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource Brush.TextPrimary}" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="1"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{Binding Progress, Converter={StaticResource ProgressToBrushConverter}}">
+                                            <Run Text="{Binding CurrentText}" />
+                                            <Run Text="  /  "
+                                                 Foreground="{StaticResource Brush.TextMuted}" />
+                                            <Run Text="{Binding LimitText}"
+                                                 Foreground="{StaticResource Brush.TextMuted}" />
+                                        </TextBlock>
+
+                                        <Button Grid.Column="2"
+                                                Margin="10,0,0,0"
+                                                Style="{StaticResource LimitDeleteButtonStyle}"
+                                                Command="{Binding DataContext.DeleteLimitCommand,
+                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}">
+                                            <controls:SvgIcon Width="14"
+                                                              Height="14"
+                                                              Source="pack://application:,,,/Resources/Icons/trash-bin.svg" />
+                                        </Button>
+                                    </Grid>
+
+                                    <!-- progress -->
+                                    <Grid Grid.Row="2"
+                                          Height="6">
+                                        <Border Background="#37375A"
+                                                CornerRadius="4" />
+
+                                        <Border
+                                            Background="{Binding Progress, Converter={StaticResource ProgressToBrushConverter}}"
+                                            CornerRadius="4"
+                                            RenderTransformOrigin="0,0.5">
+                                            <Border.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding Progress}" />
+                                            </Border.RenderTransform>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- footer -->
+                                    <Grid Grid.Row="4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="₴ 0"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   HorizontalAlignment="Left" />
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Center">
+
+                                            <TextBlock Text="{Binding ProgressPercentText}"
+                                                       FontSize="11"
+                                                       Foreground="{Binding Progress, Converter={StaticResource ProgressToBrushConverter}}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <TextBlock Text=" • "
+                                                       FontSize="11"
+                                                       Foreground="{StaticResource Brush.TextMuted}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <TextBlock Text="{Binding RemainingText}"
+                                                       FontSize="11">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground"
+                                                                Value="{Binding Progress, Converter={StaticResource ProgressToBrushConverter}}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOverspent}" Value="True">
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource Brush.Danger}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding LimitText}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   HorizontalAlignment="Right" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -4,10 +4,12 @@
              xmlns:dashboardViews="clr-namespace:Spendly.Views.Dashboard"
              xmlns:transactionsViews="clr-namespace:Spendly.Views.Transactions"
              xmlns:analyticsViews="clr-namespace:Spendly.Views.Analytics"
+             xmlns:budgetsViews="clr-namespace:Spendly.Views.Budgets"
              xmlns:selectors="clr-namespace:Spendly.Selectors"
              xmlns:dashboardVm="clr-namespace:Spendly.ViewModels.Dashboard"
              xmlns:transactionsVm="clr-namespace:Spendly.ViewModels.Transactions"
              xmlns:analyticsVm="clr-namespace:Spendly.ViewModels.Analytics"
+             xmlns:budgetsVm="clr-namespace:Spendly.ViewModels.Budgets"
              xmlns:notifications="clr-namespace:Spendly.Controls.Notifications">
 
     <UserControl.Resources>
@@ -24,6 +26,10 @@
         <DataTemplate x:Key="Header.Analytics" DataType="{x:Type analyticsVm:AnalyticsViewModel}">
             <analyticsViews:AnalyticsHeaderView />
         </DataTemplate>
+        
+        <DataTemplate x:Key="Header.Budgets" DataType="{x:Type budgetsVm:BudgetsViewModel}">
+            <budgetsViews:BudgetsHeaderView />
+        </DataTemplate>
 
         <!-- BODY templates -->
         <DataTemplate x:Key="Body.Dashboard" DataType="{x:Type dashboardVm:DashboardViewModel}">
@@ -37,17 +43,23 @@
         <DataTemplate x:Key="Body.Analytics" DataType="{x:Type analyticsVm:AnalyticsViewModel}">
             <analyticsViews:AnalyticsView />
         </DataTemplate>
+        
+        <DataTemplate x:Key="Body.Budgets" DataType="{x:Type budgetsVm:BudgetsViewModel}">
+            <budgetsViews:BudgetsView />
+        </DataTemplate>
 
         <!-- Selectors -->
         <selectors:HeaderTemplateSelector x:Key="HeaderTemplateSelector"
                                           Dashboard="{StaticResource Header.Dashboard}"
                                           Transactions="{StaticResource Header.Transactions}" 
-                                          Analytics="{StaticResource Header.Analytics}"/>
+                                          Analytics="{StaticResource Header.Analytics}"
+                                          Budgets="{StaticResource Header.Budgets}"/>
 
         <selectors:BodyTemplateSelector x:Key="BodyTemplateSelector"
                                         Dashboard="{StaticResource Body.Dashboard}"
                                         Transactions="{StaticResource Body.Transactions}" 
-                                        Analytics="{StaticResource Body.Analytics}"/>
+                                        Analytics="{StaticResource Body.Analytics}"
+                                        Budgets="{StaticResource Body.Budgets}"/>
 
     </UserControl.Resources>
 
@@ -95,6 +107,11 @@
                 <RadioButton Content="Analytics"
                              IsChecked="{Binding IsAnalyticsSelected, Mode=OneWay}"
                              Command="{Binding NavigateToAnalyticsCommand}"
+                             Style="{StaticResource SidebarButtonStyle}" />
+                
+                <RadioButton Content="Budgets"
+                             IsChecked="{Binding IsBudgetsSelected, Mode=OneWay}"
+                             Command="{Binding NavigateToBudgetsCommand}"
                              Style="{StaticResource SidebarButtonStyle}" />
                 
             </StackPanel>

@@ -7,6 +7,7 @@
              xmlns:dashboard="clr-namespace:Spendly.Controls.Dashboard"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              xmlns:analytics="clr-namespace:Spendly.Controls.Analytics"
+             xmlns:converters="clr-namespace:Spendly.Converters"
              mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -27,6 +28,38 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="AnimatedTopStripStyle" TargetType="Border">
+            <Setter Property="Height" Value="6" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="CornerRadius" Value="12,12,0,0" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop x:Name="Gs1" Color="#43D9D9" Offset="0.0" />
+                        <GradientStop x:Name="Gs2" Color="#4B93FF" Offset="0.55" />
+                        <GradientStop x:Name="Gs3" Color="#6C63FF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                            <DoubleAnimation Storyboard.TargetProperty="Background.GradientStops[0].Offset"
+                                             From="-0.15" To="0.15" Duration="0:0:2.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="Background.GradientStops[1].Offset"
+                                             From="0.35" To="0.7" Duration="0:0:2.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="Background.GradientStops[2].Offset"
+                                             From="0.85" To="1.15" Duration="0:0:2.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
     </UserControl.Resources>
 
     <Grid Background="{StaticResource Brush.MainBg}">
@@ -36,16 +69,17 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <TextBlock Text="General"
                                Margin="0,0,0,10"
                                FontSize="24"
                                FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.TextPrimary}" />
+
                     <!-- TOP STATS -->
                     <Grid Grid.Row="1" Margin="0,0,0,14">
                         <Grid.ColumnDefinitions>
@@ -58,113 +92,206 @@
                             <ColumnDefinition Width="1.7*" />
                         </Grid.ColumnDefinitions>
 
-                        <analytics:AnalyticsBudgetCard Grid.Column="0"
-                                                       Title="Entertainment"
-                                                       BadgeText="OVERSPENT"
-                                                       IconSource="pack://application:,,,/Resources/Icons/Categories/entertainment-category.svg"
-                                                       CurrentText="₴ 3 450"
-                                                       LimitText="₴ 2 500"
-                                                       ProgressValue="1"
-                                                       Variant="{x:Static dashboard:KpiVariant.Danger}" />
+                        <analytics:AnalyticsBudgetCard
+                            Kind="Overspent"
+                            BadgeText="OVERSPENT"
+                            HasData="{Binding HasOverspent}"
+                            Title="{Binding OverspentTitle}"
+                            IconSource="{Binding OverspentIcon}"
+                            CurrentText="{Binding OverspentCurrentText}"
+                            LimitText="{Binding OverspentLimitText}"
+                            ProgressValue="{Binding OverspentProgress}"
+                            Variant="{x:Static dashboard:KpiVariant.Danger}" />
 
                         <analytics:AnalyticsBudgetCard Grid.Column="2"
-                                                       Title="Education"
+                                                       Kind="Underused"
                                                        BadgeText="UNDERUSED"
-                                                       IconSource="pack://application:,,,/Resources/Icons/Categories/education-category.svg"
-                                                       CurrentText="₴ 400"
-                                                       LimitText="₴ 3 000"
-                                                       ProgressValue="0.13"
+                                                       HasData="{Binding HasUnderused}"
+                                                       Title="{Binding UnderusedTitle}"
+                                                       IconSource="{Binding UnderusedIcon}"
+                                                       CurrentText="{Binding UnderusedCurrentText}"
+                                                       LimitText="{Binding UnderusedLimitText}"
+                                                       ProgressValue="{Binding UnderusedProgress}"
                                                        Variant="{x:Static dashboard:KpiVariant.Success}" />
 
-                        <!-- Risk zone -->
                         <Border Grid.Column="4"
+                                x:Name="RiskCard"
                                 CornerRadius="12"
                                 Background="{StaticResource Brush.CardBg}"
                                 BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="1"
-                                Padding="14">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="12" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="10" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                                BorderThickness="1">
+                            <Border.Clip>
+                                <MultiBinding Converter="{StaticResource ClipRectConverter}">
+                                    <Binding ElementName="RiskCard" Path="ActualWidth" />
+                                    <Binding ElementName="RiskCard" Path="ActualHeight" />
+                                    <Binding ElementName="RiskCard" Path="CornerRadius" />
+                                </MultiBinding>
+                            </Border.Clip>
 
-                                <Border Background="{StaticResource Brush.WarningOverlay}"
-                                        CornerRadius="6"
-                                        Padding="8,4"
-                                        HorizontalAlignment="Left">
-                                    <TextBlock Text="RISK ZONE"
-                                               FontSize="10"
-                                               Foreground="{StaticResource Brush.Warning}" />
-                                </Border>
+                            <Grid ClipToBounds="True">
+                                <!-- Glow -->
+                                <Ellipse x:Name="Glow"
+                                         Width="260"
+                                         Height="220"
+                                         Margin="0,-135,-135,0"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Top"
+                                         Opacity="0.55"
+                                         IsHitTestVisible="False">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Opacity" Value="0.48" />
+                                            <Setter Property="Fill">
+                                                <Setter.Value>
+                                                    <RadialGradientBrush Center="0.5,0.5"
+                                                                         GradientOrigin="0.5,0.5"
+                                                                         RadiusX="0.5"
+                                                                         RadiusY="0.5">
+                                                        <GradientStop Color="{StaticResource Spendly.Warning.A60}"
+                                                                      Offset="0.0" />
+                                                        <GradientStop Color="{StaticResource Spendly.Warning.A10}"
+                                                                      Offset="0.45" />
+                                                        <GradientStop Color="Transparent" Offset="1.0" />
+                                                    </RadialGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
 
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasRiskItems}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.55" />
+                                                    <Setter Property="Fill">
+                                                        <Setter.Value>
+                                                            <RadialGradientBrush Center="0.5,0.5"
+                                                                    GradientOrigin="0.5,0.5"
+                                                                    RadiusX="0.5"
+                                                                    RadiusY="0.5">
+                                                                <GradientStop
+                                                                    Color="{StaticResource Spendly.Primary.A60}"
+                                                                    Offset="0.0" />
+                                                                <GradientStop
+                                                                    Color="{StaticResource Spendly.Primary.A10}"
+                                                                    Offset="0.45" />
+                                                                <GradientStop Color="Transparent" Offset="1.0" />
+                                                            </RadialGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
 
-                                    <Border Width="26"
-                                            Height="26"
-                                            CornerRadius="8"
-                                            Background="{StaticResource Brush.Primary.A10}">
-                                        <controls:SvgIcon Width="16"
-                                                          Height="16"
-                                                          VerticalAlignment="Center"
-                                                          HorizontalAlignment="Center"
-                                                          Source="pack://application:,,,/Resources/Icons/Categories/transport-category.svg" />
-                                    </Border>
+                                    <Ellipse.Effect>
+                                        <BlurEffect Radius="20" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
 
-                                    <TextBlock Grid.Column="1"
-                                               Margin="10,0,0,0"
-                                               VerticalAlignment="Center"
-                                               Text="Transport"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextPrimary}" />
+                                <!-- Top overlay -->
+                                <Rectangle Opacity="0.18"
+                                           IsHitTestVisible="False">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#22FFFFFF" Offset="0.0" />
+                                            <GradientStop Color="Transparent" Offset="0.7" />
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
 
-                                    <TextBlock Grid.Column="2"
-                                               VerticalAlignment="Center"
-                                               Text="96%"
-                                               FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource Brush.Warning}" />
-                                </Grid>
+                                <!-- CONTENT -->
+                                <Grid Margin="14">
+                                    <!-- STATE: has risk items -->
+                                    <Grid
+                                        Visibility="{Binding HasRiskItems, Converter={StaticResource BoolToVisibility}}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="12" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                        <Border Background="{StaticResource Brush.WarningOverlay}"
+                                                CornerRadius="6"
+                                                Padding="8,4"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="RISK ZONE"
+                                                       FontSize="10"
+                                                       Foreground="{StaticResource Brush.Warning}" />
+                                        </Border>
 
-                                    <Border Width="26"
-                                            Height="26"
-                                            CornerRadius="8"
-                                            Background="{StaticResource Brush.Danger.A10}">
-                                        <controls:SvgIcon Width="16"
-                                                          Height="16"
-                                                          VerticalAlignment="Center"
-                                                          HorizontalAlignment="Center"
-                                                          Source="pack://application:,,,/Resources/Icons/Categories/clothing-category.svg" />
-                                    </Border>
+                                        <ItemsControl Grid.Row="2"
+                                                      ItemsSource="{Binding RiskItems}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,0,0,10">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="1"
-                                               Margin="10,0,0,0"
-                                               VerticalAlignment="Center"
-                                               Text="Clothes"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextPrimary}" />
+                                                        <Border Width="26"
+                                                                Height="26"
+                                                                CornerRadius="8"
+                                                                Background="{StaticResource Brush.Warning.A10}">
+                                                            <controls:SvgIcon Width="16"
+                                                                              Height="16"
+                                                                              VerticalAlignment="Center"
+                                                                              HorizontalAlignment="Center"
+                                                                              Source="{Binding IconSource}" />
+                                                        </Border>
 
-                                    <TextBlock Grid.Column="2"
-                                               VerticalAlignment="Center"
-                                               Text="85%"
-                                               FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource Brush.Warning}" />
+                                                        <TextBlock Grid.Column="1"
+                                                                   Margin="10,0,0,0"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding CategoryName}"
+                                                                   FontSize="12"
+                                                                   Foreground="{StaticResource Brush.TextPrimary}" />
+
+                                                        <TextBlock Grid.Column="2"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding ProgressText}"
+                                                                   FontSize="12"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{StaticResource Brush.Warning}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+
+                                    <!-- STATE: empty -->
+                                    <Grid
+                                        Visibility="{Binding HasRiskItems, Converter={StaticResource InverseBoolToVisibility}}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="18" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="8" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <Border Grid.Row="0"
+                                                Background="{StaticResource Brush.PrimaryOverlay}"
+                                                CornerRadius="6"
+                                                Padding="8,4"
+                                                HorizontalAlignment="Left">
+                                            <TextBlock Text="ALL GOOD"
+                                                       FontSize="10"
+                                                       Foreground="{StaticResource Brush.Primary}" />
+                                        </Border>
+
+                                        <TextBlock Grid.Row="2"
+                                                   Text="No categories at risk"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"
+                                                   TextWrapping="Wrap" />
+
+                                        <TextBlock Grid.Row="4"
+                                                   Text="Everything is within a safe range"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource Brush.TextMuted}"
+                                                   TextWrapping="Wrap"
+                                                   MaxWidth="190" />
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Border>
@@ -197,7 +324,7 @@
 
                                     <TextBlock Margin="0,10,0,6"
                                                HorizontalAlignment="Center"
-                                               Text="₴29 400"
+                                               Text="{Binding ForecastAmountText}"
                                                FontSize="36"
                                                FontWeight="Bold"
                                                Foreground="#4B93FF" />
@@ -221,18 +348,12 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="210" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="CHOOSE CATEGORY"
-                                       FontSize="11"
-                                       Foreground="{StaticResource Brush.TextMuted}" />
-
                             <!-- Chips -->
-                            <ScrollViewer Grid.Row="2"
+                            <ScrollViewer Grid.Row="0"
                                           x:Name="CategoryChipsScrollViewer"
                                           HorizontalScrollBarVisibility="Hidden"
                                           VerticalScrollBarVisibility="Disabled"
@@ -306,7 +427,7 @@
                             </ScrollViewer>
 
                             <!-- Line chart -->
-                            <Grid Grid.Row="4">
+                            <Grid Grid.Row="2">
                                 <lvc:CartesianChart Series="{Binding TrendSeries}"
                                                     XAxes="{Binding TrendXAxes}"
                                                     YAxes="{Binding TrendYAxes}"
@@ -314,7 +435,7 @@
                                                     TooltipPosition="Hidden"
                                                     ZoomMode="None"
                                                     Background="Transparent"
-                                                    Margin="-2,0,-8,0" />
+                                                    Margin="-15,25,-15,10" />
                             </Grid>
                         </Grid>
                     </Border>
@@ -328,140 +449,123 @@
                                Foreground="{StaticResource Brush.TextPrimary}" />
 
                     <TextBlock Margin="0,4,0,14"
-                               Text="MOST ACTIVE CARDS"
+                               Text="TOP SPENDING ACCOUNTS"
                                FontSize="11"
                                Foreground="{StaticResource Brush.TextMuted}" />
 
                     <!-- account cards -->
-                    <Grid Margin="0,0,0,14">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="14" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <ItemsControl Margin="0,0,0,14"
+                                  ItemsSource="{Binding TopAccounts}"
+                                  AlternationCount="2">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                        <!-- Monobank -->
-                        <Border Grid.Column="0"
-                                CornerRadius="12"
-                                Background="{StaticResource Brush.CardBg}"
-                                BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="1">
-                            <Grid>
-                                <Border Height="6"
-                                        VerticalAlignment="Top"
-                                        CornerRadius="12,12,0,0"
-                                        Background="#43D9D9" />
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Margin" Value="0,0,14,0" />
+                                <Style.Triggers>
+                                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                        <Setter Property="Margin" Value="0" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
 
-                                <StackPanel Margin="16,20,16,16">
-                                    <Border Background="{StaticResource Brush.DangerOverlay}"
-                                            CornerRadius="6"
-                                            Padding="8,4"
-                                            HorizontalAlignment="Left">
-                                        <TextBlock Text="TOP SPENDING ACCOUNT"
-                                                   FontSize="10"
-                                                   Foreground="{StaticResource Brush.Danger}" />
-                                    </Border>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="12"
+                                        Background="{StaticResource Brush.CardBg}"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1">
+                                    <Grid>
+                                        <!-- animated top strip -->
+                                        <Border Height="6"
+                                                VerticalAlignment="Top"
+                                                CornerRadius="12,12,0,0">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0"
+                                                                     EndPoint="1,0"
+                                                                     SpreadMethod="Repeat">
+                                                    <GradientStop Color="#43D9A2" Offset="0.00" />
+                                                    <GradientStop Color="#43D9D9" Offset="0.25" />
+                                                    <GradientStop Color="#4B93FF" Offset="0.50" />
+                                                    <GradientStop Color="#8A5CFF" Offset="0.75" />
+                                                    <GradientStop Color="#43D9A2" Offset="1.00" />
 
-                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                                        <Border Width="34"
-                                                Height="34"
-                                                CornerRadius="10"
-                                                Background="#2A2A38">
-                                            <TextBlock Text="mono"
-                                                       FontSize="10"
-                                                       FontWeight="Bold"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Foreground="{StaticResource Brush.TextPrimary}" />
+                                                    <LinearGradientBrush.RelativeTransform>
+                                                        <TranslateTransform x:Name="TopStripShift" X="0" />
+                                                    </LinearGradientBrush.RelativeTransform>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+
+                                            <Border.Triggers>
+                                                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="Forever">
+                                                            <DoubleAnimation Storyboard.TargetName="TopStripShift"
+                                                                             Storyboard.TargetProperty="X"
+                                                                             From="-1"
+                                                                             To="1"
+                                                                             Duration="0:0:10" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Border.Triggers>
                                         </Border>
 
-                                        <TextBlock Margin="12,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   Text="Monobank"
-                                                   FontSize="18"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.TextPrimary}" />
-                                    </StackPanel>
+                                        <StackPanel Margin="16,20,16,16">
+                                            <Border Background="{Binding BadgeBackground}"
+                                                    CornerRadius="6"
+                                                    Padding="8,4"
+                                                    HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding BadgeText}"
+                                                           FontSize="10"
+                                                           Foreground="{Binding AccentBrush}" />
+                                            </Border>
 
-                                    <TextBlock Margin="0,22,0,0"
-                                               Text="Spent this month"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextMuted}" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                                <Border Width="34"
+                                                        Height="34"
+                                                        CornerRadius="10"
+                                                        Background="{Binding IconBackground}">
+                                                    <TextBlock Text="{Binding IconText}"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontSize="14" />
+                                                </Border>
 
-                                    <TextBlock Margin="0,8,0,0"
-                                               Text="₴ 15 320"
-                                               FontSize="22"
-                                               Foreground="{StaticResource Brush.Danger}" />
+                                                <TextBlock Margin="12,0,0,0"
+                                                           VerticalAlignment="Center"
+                                                           Text="{Binding AccountName}"
+                                                           FontSize="18"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{StaticResource Brush.TextPrimary}" />
+                                            </StackPanel>
 
-                                    <TextBlock Margin="0,6,0,0"
-                                               Text="54% of all expenses"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextMuted}" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                                            <TextBlock Margin="0,22,0,0"
+                                                       Text="Spent this month"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource Brush.TextMuted}" />
 
-                        <!-- PrivatBank -->
-                        <Border Grid.Column="2"
-                                CornerRadius="12"
-                                Background="{StaticResource Brush.CardBg}"
-                                BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="1">
-                            <Grid>
-                                <Border Height="6"
-                                        VerticalAlignment="Top"
-                                        CornerRadius="12,12,0,0"
-                                        Background="{StaticResource Brush.Primary}" />
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{Binding AmountText}"
+                                                       FontSize="22"
+                                                       Foreground="{Binding AccentBrush}" />
 
-                                <StackPanel Margin="16,20,16,16">
-                                    <Border Background="{StaticResource Brush.PrimaryOverlay}"
-                                            CornerRadius="6"
-                                            Padding="8,4"
-                                            HorizontalAlignment="Left">
-                                        <TextBlock Text="SECOND BY SPENDING"
-                                                   FontSize="10"
-                                                   Foreground="#4B93FF" />
-                                    </Border>
-
-                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                                        <Border Width="34"
-                                                Height="34"
-                                                CornerRadius="10"
-                                                Background="#D7F0C9">
-                                            <TextBlock Text="↱"
-                                                       FontSize="20"
-                                                       FontWeight="Bold"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Foreground="#2D6627" />
-                                        </Border>
-
-                                        <TextBlock Margin="12,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   Text="PrivatBank"
-                                                   FontSize="18"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.TextPrimary}" />
-                                    </StackPanel>
-
-                                    <TextBlock Margin="0,22,0,0"
-                                               Text="Spent this month"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextMuted}" />
-
-                                    <TextBlock Margin="0,8,0,0"
-                                               Text="₴ 9 800"
-                                               FontSize="22"
-                                               Foreground="#4B93FF" />
-
-                                    <TextBlock Margin="0,6,0,0"
-                                               Text="35% of all expenses"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextMuted}" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                                            <TextBlock Margin="0,6,0,0"
+                                                       Text="{Binding ShareText}"
+                                                       FontSize="12"
+                                                       Foreground="{StaticResource Brush.TextMuted}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
                     <!-- bars -->
                     <TextBlock Text="EXPENSE BREAKDOWN"
@@ -486,11 +590,10 @@
                                                 CornerRadius="8"
                                                 Background="{Binding IconBackground}">
                                             <TextBlock Text="{Binding IconText}"
+                                                       Foreground="White"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"
-                                                       Foreground="{StaticResource Brush.TextPrimary}"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="10" />
+                                                       FontSize="13" />
                                         </Border>
 
                                         <TextBlock Margin="10,0,0,0"
@@ -507,10 +610,13 @@
                                         <Border Background="#38385A"
                                                 CornerRadius="6" />
 
-                                        <Border HorizontalAlignment="Left"
+                                        <Border CornerRadius="6"
                                                 Background="{Binding FillBrush}"
-                                                CornerRadius="6"
-                                                Width="{Binding BarWidth}" />
+                                                RenderTransformOrigin="0,0.5">
+                                            <Border.RenderTransform>
+                                                <ScaleTransform ScaleX="{Binding Progress}" />
+                                            </Border.RenderTransform>
+                                        </Border>
                                     </Grid>
 
                                     <TextBlock Grid.Column="2"

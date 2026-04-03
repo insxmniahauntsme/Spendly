@@ -16,7 +16,7 @@
         <!-- Top chip -->
         <ToggleButton x:Name="DropButton"
                       Style="{StaticResource TxnFilterChipToggleStyle}"
-                      Width="116"
+                      Width="130"
                       IsChecked="{Binding ElementName=Root, Path=IsOpen, Mode=TwoWay}"
                       PreviewMouseRightButtonUp="DropButton_OnPreviewMouseRightButtonUp">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

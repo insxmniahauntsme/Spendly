@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Spendly.Data.Enums;
+using Spendly.Domain.Enums;
 
 namespace Spendly.Data.Entities;
 

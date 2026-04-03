@@ -22,6 +22,7 @@
                                        Title="Income (month)"
                                        ValueText="{Binding IncomeMonthText}"
                                        BadgeText="{Binding IncomeMonthBadgeText}"
+                                       BadgeVariant="{Binding IncomeMonthBadgeVariant}"
                                        SubText="" />
 
                     <dashboard:KpiCard Margin="0,0,12,12"
@@ -29,6 +30,7 @@
                                        Title="Expenses (month)"
                                        ValueText="{Binding ExpenseMonthText}"
                                        BadgeText="{Binding ExpenseMonthBadgeText}"
+                                       BadgeVariant="{Binding ExpenseMonthBadgeVariant}"
                                        SubText="" />
 
                     <dashboard:KpiCard Margin="0,0,12,12"

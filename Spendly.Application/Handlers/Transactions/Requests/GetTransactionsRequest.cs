@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Spendly.Application.Models;
-using Spendly.Data.Enums;
 using Spendly.Domain.Enums;
 using Spendly.Domain.Models;
 

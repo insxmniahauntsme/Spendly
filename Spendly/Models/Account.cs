@@ -1,4 +1,4 @@
-﻿using Spendly.Data.Enums;
+﻿using Spendly.Domain.Enums;
 
 namespace Spendly.Models;
 
