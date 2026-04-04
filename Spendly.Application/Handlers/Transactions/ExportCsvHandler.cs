@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Spendly.Application.Handlers.Transactions.Requests;
 using Spendly.Data.Entities;
 using Spendly.Domain.Enums;
-using Spendly.Domain.Models;
 using Spendly.Infrastructure;
 
 namespace Spendly.Application.Handlers.Transactions;
